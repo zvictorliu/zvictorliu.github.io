@@ -2,8 +2,6 @@
 <font color="red">hello! </font>
 
 
-$$
-e^{jwt} = \cos wt + j \sin wt
-$$
+seems it doesn't support latex
 
 is this helpful?

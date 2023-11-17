@@ -78,7 +78,7 @@ sections:
         - title: Professor of Semiconductor Physics
           company: Shanghai Jiao Tong University
           company_url: 'https://www.sjtu.edu.cn/'
-          company_logo: 'https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/2023/11/17/2626f9bfc174ea490d20fe5821fab973-image-20231117164254365-a928cb.png'
+          company_logo: sjtulogo
           location: California
           date_start: '2016-01-01'
           date_end: '2020-12-31'

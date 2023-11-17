@@ -2,7 +2,7 @@
 title: Editing outdoor scenes with a large annotated synthetic dataset
 authors:
 - Mingye Xie
-- Zongwei Liu
+- admin
 - Suncheng Xiang
 - Ting Liu
 - Yuzhuo Fu

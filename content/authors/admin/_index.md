@@ -53,13 +53,13 @@ skills:
       - name: C/C++
         description: ''
         percent: 80
-        icon: cpp
-        icon_pack: custom
+        icon: c
+        icon_pack: fab
       - name: Linux
         description: ''
         percent: 60
         icon: linux
-        icon_pack: custom
+        icon_pack: fab
   - name: Hobbies
     color: '#eeac02'
     color_border: '#f0bf23'
@@ -114,5 +114,5 @@ social:
 highlight_name: true
 ---
 
-Chien Shiung Wu is a professor of artificial intelligence at the Stanford AI Lab. Her research interests include distributed robotics, mobile computing and programmable matter. She leads the Robotic Neurobiology group, which develops self-reconfiguring robots, systems of self-organizing robots, and mobile sensor networks.
+Welcome! I am Zongwei Liu(刘宗炜), a senior student at SJTU, majoring in Measurement and Instrumentation. Now I am going to start a new life as a graduate. The research filed is about GNSS-RTK position, which I never learned before. Still I keep a passion for programming and development, I hope my major do not influence it.
 {style="text-align: justify;"}

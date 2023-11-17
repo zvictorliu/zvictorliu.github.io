@@ -21,8 +21,8 @@ role: A senior student
 
 # Organizations/Affiliations to show in About widget
 organizations:
-  - name: SJTU
-    url: https://www.stanford.edu/
+  - name: Shanghai Jiao Tong University
+    url: https://www.sjtu.edu.cn/
 
 # Short bio (displayed in user profile at end of posts)
 bio: My research interests include distributed robotics, mobile computing and programmable matter.
@@ -36,15 +36,9 @@ interests:
 # Education to show in About widget
 education:
   courses:
-    - course: PhD in Artificial Intelligence
-      institution: Stanford University
-      year: 2012
-    - course: MEng in Artificial Intelligence
-      institution: Massachusetts Institute of Technology
-      year: 2009
-    - course: BSc in Artificial Intelligence
-      institution: Massachusetts Institute of Technology
-      year: 2008
+    - course: BSc in Measurement And Instrumentation
+      institution: Shanghai Jiao Tong University
+      year: 2024
 
 # Skills
 # For available icons, see: https://docs.hugoblox.com/getting-started/page-builder/#icons
@@ -105,7 +99,7 @@ social:
     link: https://scholar.google.co.uk/citations?user=sIwtMXoAAAAJ
   - icon: github
     icon_pack: fab
-    link: https://github.com/gcushen
+    link: https://github.com/zvictorliu
   - icon: linkedin
     icon_pack: fab
     link: https://www.linkedin.com/

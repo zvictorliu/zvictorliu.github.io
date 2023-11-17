@@ -54,7 +54,7 @@ skills:
         description: ''
         percent: 80
         icon: cpp
-        icon_pack: custom
+        # icon_pack: custom
       - name: Linux
         description: ''
         percent: 60
@@ -64,20 +64,20 @@ skills:
     color: '#eeac02'
     color_border: '#f0bf23'
     items:
-      - name: Hiking
-        description: ''
-        percent: 60
-        icon: person-hiking
-        icon_pack: fas
-      - name: Cats
+      - name: Movies & TV Series
         description: ''
         percent: 100
-        icon: cat
+        icon: film
         icon_pack: fas
-      - name: Photography
+      - name: History
         description: ''
-        percent: 80
-        icon: camera-retro
+        percent: 90
+        icon: book
+        icon_pack: fas
+      - name: Music
+        description: ''
+        percent: 70
+        icon: music
         icon_pack: fas
 
 # Social/Academic Networking

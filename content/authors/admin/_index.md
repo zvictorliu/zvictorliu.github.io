@@ -1,9 +1,9 @@
 ---
 # Display name
-title: 刘宗炜
+title: Zongwei Liu
 
 # Name pronunciation (optional)
-name_pronunciation: Liu Zong Wei
+# name_pronunciation: Liu Zong Wei
 
 # Full name (for SEO)
 first_name: Zongwei

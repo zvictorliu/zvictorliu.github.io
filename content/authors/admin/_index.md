@@ -54,12 +54,12 @@ skills:
         description: ''
         percent: 80
         icon: cpp
-        # icon_pack: custom
+        icon_pack: custom
       - name: Linux
         description: ''
         percent: 60
         icon: linux
-        # icon_pack: fas
+        icon_pack: custom
   - name: Hobbies
     color: '#eeac02'
     color_border: '#f0bf23'

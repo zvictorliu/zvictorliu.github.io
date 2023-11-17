@@ -1,12 +1,12 @@
 ---
 title: "An example journal article"
 authors:
+- Mingye, Xie
 - admin
-- Zongwei Liu
-author_notes:
-- "Equal contribution"
-- "Equal contribution"
-date: "2015-09-01T00:00:00Z"
+# author_notes:
+# - "Equal contribution"
+# - "Equal contribution"
+date: "2023-08-09T00:00:00Z"
 doi: ""
 
 # Schedule page publish date (NOT publication's date).

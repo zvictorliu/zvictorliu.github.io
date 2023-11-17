@@ -81,7 +81,7 @@ sections:
           company_logo: sjtulogo
           location: Shanghai, China
           date_start: '2020-09-01'
-          date_end: 'Present'
+          date_end: ''
           description: Pursuiting a BSc degree
     design:
       columns: '1'

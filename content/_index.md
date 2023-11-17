@@ -75,7 +75,7 @@ sections:
         #       * Analysing
         #       * Modelling
         #       * Deploying
-        - title: Professor of Semiconductor Physics
+        - title: BSc in Measurement And Instrumentation
           company: Shanghai Jiao Tong University
           company_url: 'https://www.sjtu.edu.cn/'
           company_logo: sjtulogo

@@ -4,6 +4,7 @@ date: '2023-11-04'
 summary: Easily blog from Jupyter notebooks!
 ---
 
+[book layout]({{< relref “index.md” >}})
 
 ```python
 from IPython.core.display import Image
@@ -22,7 +23,6 @@ print("Welcome to Academic!")
 
 ## Organize your notebooks
 
-{{< toc >}}
 Place the notebooks that you would like to publish in a `notebooks` folder at the root of your website.
 
 ## Import the notebooks into your site

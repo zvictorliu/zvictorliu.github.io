@@ -22,6 +22,7 @@ print("Welcome to Academic!")
 
 ## Organize your notebooks
 
+{{< toc >}}
 Place the notebooks that you would like to publish in a `notebooks` folder at the root of your website.
 
 ## Import the notebooks into your site

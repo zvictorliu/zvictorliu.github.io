@@ -110,6 +110,10 @@ social:
     icon_pack: ai
     link: uploads/resume.pdf
 
+  - icon: microchip
+    icon_pack: fas
+    link: https://zvictorliu.github.io/techBlog/
+
 # Highlight the author in author lists? (true/false)
 highlight_name: true
 ---

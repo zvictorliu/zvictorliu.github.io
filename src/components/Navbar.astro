@@ -1,0 +1,189 @@
+---
+interface Props {
+  currentPath?: string;
+}
+
+const { currentPath = '/' } = Astro.props;
+
+const navItems = [
+  { name: 'Home', url: '#about' },
+  { name: 'Posts', url: '#posts' },
+  { name: 'Projects', url: '#projects' },
+  { name: 'Talks', url: '#talks' },
+  { name: 'Publications', url: '#featured' },
+  { name: 'Contact', url: '#contact' },
+];
+---
+
+<header class="site-header">
+  <nav class="navbar">
+    <div class="container">
+      <a class="navbar-brand" href="/">Zongwei Liu's Homepage</a>
+      
+      <button class="navbar-toggler" type="button" aria-label="Toggle navigation">
+        <span class="hamburger"></span>
+      </button>
+
+      <div class="navbar-menu">
+        <ul class="navbar-nav">
+          {navItems.map((item) => (
+            <li class="nav-item">
+              <a class="nav-link" href={item.url}>{item.name}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: var(--bg-color);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .navbar {
+    padding: 0.8rem 0;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .navbar-brand {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-color);
+    text-decoration: none;
+  }
+
+  .navbar-brand:hover {
+    color: var(--accent-color);
+  }
+
+  .navbar-menu {
+    display: flex;
+    align-items: center;
+  }
+
+  .navbar-nav {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 0.5rem;
+  }
+
+  .nav-link {
+    display: block;
+    padding: 0.5rem 1rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+  }
+
+  .nav-link:hover,
+  .nav-link.active {
+    color: var(--accent-color);
+  }
+
+  .navbar-toggler {
+    display: none;
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+  }
+
+  .hamburger {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--text-color);
+    position: relative;
+    transition: background 0.2s;
+  }
+
+  .hamburger::before,
+  .hamburger::after {
+    content: '';
+    position: absolute;
+    width: 24px;
+    height: 2px;
+    background: var(--text-color);
+    left: 0;
+    transition: transform 0.2s;
+  }
+
+  .hamburger::before {
+    top: -8px;
+  }
+
+  .hamburger::after {
+    bottom: -8px;
+  }
+
+  @media (max-width: 768px) {
+    .navbar-toggler {
+      display: block;
+    }
+
+    .navbar-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--bg-color);
+      border-top: 1px solid var(--border-color);
+      padding: 1rem;
+    }
+
+    .navbar-menu.open {
+      display: block;
+    }
+
+    .navbar-nav {
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .nav-link {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .nav-link:last-child {
+      border-bottom: none;
+    }
+  }
+</style>
+
+<script>
+  const toggler = document.querySelector('.navbar-toggler');
+  const menu = document.querySelector('.navbar-menu');
+
+  toggler?.addEventListener('click', () => {
+    menu?.classList.toggle('open');
+  });
+
+  const navLinks = document.querySelectorAll('.nav-link');
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      menu?.classList.remove('open');
+    });
+  });
+</script>

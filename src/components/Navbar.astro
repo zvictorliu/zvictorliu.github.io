@@ -1,25 +1,28 @@
 ---
-interface Props {
-  currentPath?: string;
-}
+import { getRelativeLocaleUrl } from 'astro:i18n';
 
-const { currentPath = '/' } = Astro.props;
+const lang = Astro.currentLocale || 'en';
+const t = lang === 'zh' 
+  ? { nav: { home: '首页', skills: '技能', education: '教育', experience: '经历', posts: '文章', publications: '发表', contact: '联系' } }
+  : { nav: { home: 'Home', skills: 'Skills', education: 'Education', experience: 'Experience', posts: 'Posts', publications: 'Publications', contact: 'Contact' } };
 
-const navItems = [
-  { name: 'Home', url: '#about' },
-  { name: 'Skills', url: '#skills' },
-  { name: 'Education', url: '#education' },
-  { name: 'Experience', url: '#experience' },
-  { name: 'Posts', url: '#posts' },
-  { name: 'Publications', url: '#publications' },
-  { name: 'Contact', url: '#contact' },
+type NavLabel = 'home' | 'skills' | 'education' | 'experience' | 'posts' | 'publications' | 'contact';
+
+const navItems: { label: NavLabel; url: string }[] = [
+  { label: 'home', url: '#' },
+  { label: 'skills', url: '#skills' },
+  { label: 'education', url: '#education' },
+  { label: 'experience', url: '#experience' },
+  { label: 'posts', url: '#posts' },
+  { label: 'publications', url: '#publications' },
+  { label: 'contact', url: '#contact' },
 ];
 ---
 
 <header class="site-header">
   <nav class="navbar">
     <div class="container">
-      <a class="navbar-brand" href="/">Zongwei Liu's Homepage</a>
+      <a class="navbar-brand" href={getRelativeLocaleUrl(lang)}>Zongwei Liu's Homepage</a>
       
       <button class="navbar-toggler" type="button" aria-label="Toggle navigation">
         <span class="hamburger"></span>
@@ -29,10 +32,14 @@ const navItems = [
         <ul class="navbar-nav">
           {navItems.map((item) => (
             <li class="nav-item">
-              <a class="nav-link" href={item.url}>{item.name}</a>
+              <a class="nav-link" href={item.url}>{t.nav[item.label]}</a>
             </li>
           ))}
         </ul>
+        <div class="lang-switch">
+          <a href={getRelativeLocaleUrl('en')} class="lang-btn">English</a>
+          <a href={getRelativeLocaleUrl('zh')} class="lang-btn">中文</a>
+        </div>
       </div>
     </div>
   </nav>
@@ -107,6 +114,29 @@ const navItems = [
     border: none;
     padding: 0.5rem;
     cursor: pointer;
+  }
+
+  .lang-switch {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: 1rem;
+  }
+
+  .lang-btn {
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .lang-btn:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
   }
 
   .hamburger {

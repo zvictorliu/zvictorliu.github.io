@@ -1,78 +1,83 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { getLangFromUrl, useTranslations } from '../i18n';
+import { getCollection } from 'astro:content';
 
-const allPosts = Object.values(import.meta.glob('./post/*.md', { eager: true }));
-const recentPosts = allPosts
-  .filter((post: any) => !post.frontmatter.draft)
-  .sort((a: any, b: any) => new Date(b.frontmatter.date).valueOf() - new Date(a.frontmatter.date).valueOf())
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const recentPosts = (await getCollection('post', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
 
 const profile = {
-  name: 'Zongwei Liu',
-  title: 'A postgraduate',
-  institution: 'Shanghai Jiao Tong University',
+  name: '刘宗炜',
+  institution: '上海交通大学',
   institutionUrl: 'https://www.sjtu.edu.cn/',
-  bio: "Welcome! I am Zongwei Liu (刘宗炜), a graduate student at SJTU, majoring in Electronic Information. I am pursuing a master degree in Shanghai Jiao Tong University. Hope I can graduate smoothly and have a beautiful life in the future.",
+  bio: `吾本蜀人，负笈申江。庚子入交大，倏忽六载。
+忆昔初中信息课上，初触键盘荧屏，便知此生当与代码为伴。然人生多起伏，命运总难期。本科虽未契初愿，仍向嵌入式方向深耕；升学之际，未敢轻试跨考408之锋，遂择保研本校，转而钻研导航定位算法。
+今对Agent开发颇感兴趣，志在智能体构建，此番或可返归初心。虽乍看似涉猎未深，然几经赛道更迭，方信电子信息一脉，底层逻辑本自相通。电信范畴之内，实无不可跨越之鸿沟。
+行远自迩，笃行不怠。愿持此心，再赴新程。
+  `,
   avatar: '/images/avatar.jpg',
-  interests: ['Computer Systems', 'Artificial Intelligence', 'History'],
+  interests: ['AI Agent', 'Linux'],
   education: [
-    { course: 'MSc in Electronic Information', institution: 'Shanghai Jiao Tong University', year: 'present' },
-    { course: 'BSc in Measurement And Instrumentation', institution: 'Shanghai Jiao Tong University', year: '2024' },
+    { course: '电子信息', institution: '上海交通大学', year: '至今' },
+    { course: '测控技术与仪器', institution: '上海交通大学', year: '2024' },
   ],
   skills: [
-    { name: 'Python', percent: 70, icon: 'fab fa-python', category: 'Technical' },
-    { name: 'C/C++', percent: 80, icon: 'fab fa-c', category: 'Technical' },
-    { name: 'Linux', percent: 60, icon: 'fab fa-linux', category: 'Technical' },
-    { name: 'Movies & TV Series', percent: 100, icon: 'fas fa-film', category: 'Hobbies' },
-    { name: 'History', percent: 90, icon: 'fas fa-book', category: 'Hobbies' },
-    { name: 'Music', percent: 70, icon: 'fas fa-music', category: 'Hobbies' },
+    { name: 'Python', percent: 80, icon: 'fab fa-python', category: 'Technical' },
+    { name: 'Linux', percent: 70, icon: 'fab fa-linux', category: 'Technical' },
+    { name: 'C/C++', percent: 60, icon: 'fab fa-c', category: 'Technical' },
+    { name: '电影 & 电视剧', percent: 100, icon: 'fas fa-film', category: 'Hobbies' },
+    { name: '历史', percent: 90, icon: 'fas fa-book', category: 'Hobbies' },
+    { name: '游戏', percent: 70, icon: 'fas fa-gamepad', category: 'Hobbies' },
   ],
   experience: [
     {
-      title: 'MSc in Electronic Information',
-      company: 'Shanghai Jiao Tong University',
+      title: '电子信息硕士',
+      company: '上海交通大学',
       companyUrl: 'https://www.sjtu.edu.cn/',
-      location: 'Shanghai, China',
-      dateStart: 'September 2024',
-      dateEnd: 'Present',
-      description: 'Pursuing a MSc degree',
+      location: '上海，中国',
+      dateStart: '2024年9月',
+      dateEnd: '至今',
+      description: '攻读硕士学位',
     },
     {
-      title: 'BSc in Measurement And Instrumentation',
-      company: 'Shanghai Jiao Tong University',
+      title: '测控技术与仪器学士',
+      company: '上海交通大学',
       companyUrl: 'https://www.sjtu.edu.cn/',
-      location: 'Shanghai, China',
-      dateStart: 'September 2020',
-      dateEnd: 'June 2024',
-      description: 'Received a BSc degree',
+      location: '上海，中国',
+      dateStart: '2020年9月',
+      dateEnd: '2024年6月',
+      description: '获得学士学位',
     },
   ],
   work: [
     {
-      title: 'Research Intern',
-      company: 'CHC Navigation',
+      title: '研究实习生',
+      company: '华测导航',
       companyUrl: 'https://www.chcnav.com/',
       logo: '/media/icons/brands/huace.jpg',
-      location: 'Shanghai, China',
-      dateStart: 'June 2025',
-      dateEnd: 'Present',
-      description: 'Conducted research on GNSS signal processing and NLOS mitigation algorithms.',
+      location: '上海，中国',
+      dateStart: '2025年6月',
+      dateEnd: '至今',
+      description: '从事GNSS信号处理和非视距信号抑制算法研究。',
     },
     {
-      title: 'Development Intern',
-      company: 'Softbank Robotics',
+      title: '开发实习生',
+      company: '软银机器人',
       companyUrl: 'https://www.softbankrobotics.com.cn/',
       logo: '/media/icons/brands/softbank-robotics.png',
-      location: 'Shanghai, China',
-      dateStart: 'June 2023',
-      dateEnd: 'August 2023',
-      description: 'Developed application software of the Pepper robot.',
+      location: '上海，中国',
+      dateStart: '2023年6月',
+      dateEnd: '2023年8月',
+      description: '开发Pepper机器人应用软件。',
     },
   ],
   social: [
     { icon: 'fas fa-envelope', link: 'mailto:zvictorliu@outlook.com', label: 'Email' },
     { icon: 'fab fa-github', link: 'https://github.com/zvictorliu', label: 'GitHub' },
-    // { icon: 'ai ai-cv', link: '/uploads/resume.pdf', label: 'CV' },
     { icon: 'fas fa-microchip', link: 'https://zvictorliu.github.io/techBlog/', label: 'Tech Blog' },
   ],
   publications: [
@@ -99,11 +104,11 @@ const profile = {
 
 const contact = {
   email: 'zvictorliu@outlook.com',
-  address: '800 Dongchuan Road, Shanghai, China',
+  address: '上海市闵行区东川路800号',
 };
 ---
 
-<Layout>
+<Layout locale="zh">
   <section id="about" class="section about-section">
     <div class="container">
       <div class="about-grid">
@@ -117,7 +122,7 @@ const contact = {
             />
           </div>
           <h2 class="profile-name">{profile.name}</h2>
-          <h3 class="profile-title">{profile.title}</h3>
+          <h3 class="profile-title">{t.profile.title}</h3>
           <h3 class="profile-institution">
             <a href={profile.institutionUrl} target="_blank" rel="noopener">
               {profile.institution}
@@ -133,12 +138,12 @@ const contact = {
         </div>
 
         <div class="bio-content">
-          <h2 class="section-title">Biography</h2>
+          <h2 class="section-title">{t.about.biography}</h2>
           <p class="bio-text">{profile.bio}</p>
 
           <div class="info-grid">
             <div class="info-section">
-              <h3 class="info-title">Interests</h3>
+              <h3 class="info-title">{t.about.interests}</h3>
               <ul class="interests-list">
                 {profile.interests.map((interest) => (
                   <li>
@@ -150,7 +155,7 @@ const contact = {
             </div>
 
             <div class="info-section">
-              <h3 class="info-title">Education</h3>
+              <h3 class="info-title">{t.about.education}</h3>
               <ul class="education-list">
                 {profile.education.map((edu) => (
                   <li>
@@ -171,11 +176,11 @@ const contact = {
 
   <section id="skills" class="section skills-section">
     <div class="container">
-      <h2 class="section-title">Skills</h2>
+      <h2 class="section-title">{t.skills.title}</h2>
       <div class="skills-grid">
         {['Technical', 'Hobbies'].map((category) => (
           <div class="skill-category">
-            <h3 class="skill-category-title">{category}</h3>
+            <h3 class="skill-category-title">{category === 'Technical' ? t.skills.technical : t.skills.hobbies}</h3>
             {profile.skills
               .filter((skill) => skill.category === category)
               .map((skill) => (
@@ -197,7 +202,7 @@ const contact = {
 
   <section id="education" class="section education-section">
     <div class="container">
-      <h2 class="section-title">Education</h2>
+      <h2 class="section-title">{t.education.title}</h2>
       <div class="experience-timeline">
         {profile.experience.map((exp, index) => (
           <div class="experience-item">
@@ -217,8 +222,8 @@ const contact = {
                   <p class="card-company">
                     <a href={exp.companyUrl} target="_blank" rel="noopener">{exp.company}</a>
                   </p>
-                  <p class="card-meta">
-                    {exp.dateStart} – {exp.dateEnd}
+<p class="card-meta">
+                    {exp.dateStart} - {exp.dateEnd}
                     <span class="divider"></span>
                     {exp.location}
                   </p>
@@ -234,7 +239,7 @@ const contact = {
 
   <section id="experience" class="section experience-section">
     <div class="container">
-      <h2 class="section-title">Experience</h2>
+      <h2 class="section-title">{t.experience.title}</h2>
       <div class="experience-timeline">
         {profile.work.map((exp, index) => (
           <div class="experience-item">
@@ -255,7 +260,7 @@ const contact = {
                     <a href={exp.companyUrl} target="_blank" rel="noopener">{exp.company}</a>
                   </p>
                   <p class="card-meta">
-                    {exp.dateStart} – {exp.dateEnd}
+                    {exp.dateStart} - {exp.dateEnd}
                     <span class="divider"></span>
                     {exp.location}
                   </p>
@@ -271,25 +276,25 @@ const contact = {
 
   <section id="posts" class="section posts-section">
     <div class="container">
-      <h2 class="section-title">Recent Posts</h2>
+      <h2 class="section-title">{t.posts.title}</h2>
       <div class="posts-list">
-        {recentPosts.map((post: any) => (
+        {recentPosts.map((post) => (
           <article class="post-item">
             <div class="post-content">
               <h3 class="post-title">
-                <a href={post.url}>{post.frontmatter.title}</a>
+                <a href={`/post/${post.id.replace(/\.md$/, '')}`}>{post.data.title}</a>
               </h3>
               <div class="post-meta">
-                <span class="post-date">{new Date(post.frontmatter.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                <span class="post-date">{post.data.date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
                 <span class="divider"></span>
-                <span class="post-read-time">1 min read</span>
+                <span class="post-read-time">1 {t.posts.minRead}</span>
               </div>
-              <p class="post-excerpt">{post.frontmatter.description}</p>
+              <p class="post-excerpt">{post.data.description}</p>
             </div>
-            {post.frontmatter.image && (
+            {post.data.image && (
               <div class="post-image">
-                <a href={post.url}>
-                  <img src={post.frontmatter.image} alt={post.frontmatter.title} loading="lazy" />
+                <a href={`/post/${post.id.replace(/\.md$/, '')}`}>
+                  <img src={post.data.image} alt={post.data.title} loading="lazy" />
                 </a>
               </div>
             )}
@@ -297,7 +302,7 @@ const contact = {
         ))}
         <div class="see-all">
           <a href="/post/">
-            See all posts
+            {t.posts.seeAll}
             <i class="fas fa-angle-right"></i>
           </a>
         </div>
@@ -307,7 +312,7 @@ const contact = {
 
   <section id="publications" class="section publications-section">
     <div class="container">
-      <h2 class="section-title">Recent Publications</h2>
+      <h2 class="section-title">{t.publications.title}</h2>
       <div class="publications-list">
         {profile.publications.map((pub) => (
           <div class="publication-item">
@@ -337,7 +342,7 @@ const contact = {
       </div>
       <div class="see-all">
         <a href="/publication/">
-          See all publications
+          {t.publications.seeAll}
           <i class="fas fa-angle-right"></i>
         </a>
       </div>
@@ -346,12 +351,12 @@ const contact = {
 
   <section id="contact" class="section contact-section">
     <div class="container">
-      <h2 class="section-title">Contact</h2>
+      <h2 class="section-title">{t.contact.title}</h2>
       <div class="contact-grid">
         <div class="contact-info">
-          <h3>Get in Touch</h3>
+          <h3>{t.contact.getInTouch}</h3>
           <p class="contact-text">
-            If you like, you can leave a message here and I will reply as soon as possible.
+            {t.contact.message}
           </p>
           <ul class="contact-list">
             <li>
@@ -367,18 +372,18 @@ const contact = {
         <div class="contact-form-wrapper">
           <form class="contact-form" action="#" method="POST">
             <div class="form-group">
-              <label for="name">Name</label>
+              <label for="name">{t.contact.form.name}</label>
               <input type="text" id="name" name="name" required />
             </div>
             <div class="form-group">
-              <label for="email">Email</label>
+              <label for="email">{t.contact.form.email}</label>
               <input type="email" id="email" name="email" required />
             </div>
             <div class="form-group">
-              <label for="message">Message</label>
+              <label for="message">{t.contact.form.message}</label>
               <textarea id="message" name="message" rows="5" required></textarea>
             </div>
-            <button type="submit" class="btn btn-primary">Send</button>
+            <button type="submit" class="btn btn-primary">{t.contact.form.send}</button>
           </form>
         </div>
       </div>

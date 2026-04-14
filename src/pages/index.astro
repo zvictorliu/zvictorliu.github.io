@@ -1,6 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
+const allPosts = Object.values(import.meta.glob('./post/*.md', { eager: true }));
+const recentPosts = allPosts
+  .filter((post: any) => !post.frontmatter.draft)
+  .sort((a: any, b: any) => new Date(b.frontmatter.date).valueOf() - new Date(a.frontmatter.date).valueOf())
+  .slice(0, 3);
+
 const profile = {
   name: 'Zongwei Liu',
   title: 'A postgraduate',
@@ -46,8 +52,6 @@ const profile = {
     { icon: 'fab fa-github', link: 'https://github.com/zvictorliu', label: 'GitHub' },
     // { icon: 'ai ai-cv', link: '/uploads/resume.pdf', label: 'CV' },
     { icon: 'fas fa-microchip', link: 'https://zvictorliu.github.io/techBlog/', label: 'Tech Blog' },
-  ],
-  posts: [
   ],
   publications: [
     {
@@ -210,24 +214,26 @@ const contact = {
     <div class="container">
       <h2 class="section-title">Recent Posts</h2>
       <div class="posts-list">
-        {profile.posts.map((post) => (
+        {recentPosts.map((post: any) => (
           <article class="post-item">
             <div class="post-content">
               <h3 class="post-title">
-                <a href={post.url}>{post.title}</a>
+                <a href={post.url}>{post.frontmatter.title}</a>
               </h3>
               <div class="post-meta">
-                <span class="post-date">{post.date}</span>
+                <span class="post-date">{new Date(post.frontmatter.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
                 <span class="divider"></span>
                 <span class="post-read-time">1 min read</span>
               </div>
-              <p class="post-excerpt">{post.excerpt}</p>
+              <p class="post-excerpt">{post.frontmatter.description}</p>
             </div>
-            <div class="post-image">
-              <a href={post.url}>
-                <img src={post.image} alt={post.title} loading="lazy" />
-              </a>
-            </div>
+            {post.frontmatter.image && (
+              <div class="post-image">
+                <a href={post.url}>
+                  <img src={post.frontmatter.image} alt={post.frontmatter.title} loading="lazy" />
+                </a>
+              </div>
+            )}
           </article>
         ))}
         <div class="see-all">

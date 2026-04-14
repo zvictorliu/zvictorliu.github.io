@@ -47,6 +47,28 @@ const profile = {
       description: 'Received a BSc degree',
     },
   ],
+  work: [
+    {
+      title: 'Research Intern',
+      company: 'CHC Navigation',
+      companyUrl: 'https://www.chcnav.com/',
+      logo: '/media/icons/brands/huace.jpg',
+      location: 'Shanghai, China',
+      dateStart: 'June 2025',
+      dateEnd: 'Present',
+      description: 'Conducted research on GNSS signal processing and NLOS mitigation algorithms.',
+    },
+    {
+      title: 'Development Intern',
+      company: 'Softbank Robotics',
+      companyUrl: 'https://www.softbankrobotics.com.cn/',
+      logo: '/media/icons/brands/softbank-robotics.png',
+      location: 'Shanghai, China',
+      dateStart: 'June 2023',
+      dateEnd: 'August 2023',
+      description: 'Developed application software of the Pepper robot.',
+    },
+  ],
   social: [
     { icon: 'fas fa-envelope', link: 'mailto:zvictorliu@outlook.com', label: 'Email' },
     { icon: 'fab fa-github', link: 'https://github.com/zvictorliu', label: 'GitHub' },
@@ -173,9 +195,9 @@ const contact = {
     </div>
   </section>
 
-  <section id="experience" class="section experience-section">
+  <section id="education" class="section education-section">
     <div class="container">
-      <h2 class="section-title">Experience</h2>
+      <h2 class="section-title">Education</h2>
       <div class="experience-timeline">
         {profile.experience.map((exp, index) => (
           <div class="experience-item">
@@ -188,6 +210,43 @@ const contact = {
                 <div class="company-logo">
                   <a href={exp.companyUrl} target="_blank" rel="noopener">
                     <img src="/media/icons/brands/sjtulogo.svg" alt={exp.company} width="56" height="56" />
+                  </a>
+                </div>
+                <div class="card-title-group">
+                  <h3 class="card-title">{exp.title}</h3>
+                  <p class="card-company">
+                    <a href={exp.companyUrl} target="_blank" rel="noopener">{exp.company}</a>
+                  </p>
+                  <p class="card-meta">
+                    {exp.dateStart} – {exp.dateEnd}
+                    <span class="divider"></span>
+                    {exp.location}
+                  </p>
+                </div>
+              </div>
+              <p class="card-description">{exp.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="experience" class="section experience-section">
+    <div class="container">
+      <h2 class="section-title">Experience</h2>
+      <div class="experience-timeline">
+        {profile.work.map((exp, index) => (
+          <div class="experience-item">
+            <div class="timeline-marker">
+              <span class={`marker-dot ${index === 0 ? 'current' : ''}`}></span>
+              {index < profile.work.length - 1 && <div class="timeline-line"></div>}
+            </div>
+            <div class="experience-card">
+              <div class="card-header">
+                <div class="company-logo">
+                  <a href={exp.companyUrl} target="_blank" rel="noopener">
+                    <img src={exp.logo} alt={exp.company} width="56" height="56" />
                   </a>
                 </div>
                 <div class="card-title-group">

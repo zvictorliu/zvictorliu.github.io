@@ -4,6 +4,7 @@ export type Locale = 'en' | 'zh';
 export type TranslationKeys = {
   nav: {
     home: string;
+    about: string;
     skills: string;
     education: string;
     experience: string;
@@ -59,6 +60,7 @@ type Translations = Record<Locale, TranslationKeys>;
 const enTranslations: TranslationKeys = {
   nav: {
     home: 'Home',
+    about: 'About',
     skills: 'Skills',
     education: 'Education',
     experience: 'Experience',
@@ -111,6 +113,7 @@ const enTranslations: TranslationKeys = {
 const zhTranslations: TranslationKeys = {
   nav: {
     home: '首页',
+    about: '关于',
     skills: '技能',
     education: '教育',
     experience: '经历',

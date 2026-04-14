@@ -1,0 +1,46 @@
+---
+import Layout from './Layout.astro';
+
+interface Props {
+  title?: string;
+  locale?: string;
+}
+
+const { title, locale = 'zh' } = Astro.props;
+---
+
+<Layout title={title} locale={locale}>
+  <article class="section markdown-page">
+    <div class="container markdown-body">
+      <slot />
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .markdown-body {
+    max-width: 860px;
+  }
+
+  .markdown-body :global(h1),
+  .markdown-body :global(h2),
+  .markdown-body :global(h3) {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+  }
+
+  .markdown-body :global(h2) {
+    margin-top: 2rem;
+  }
+
+  .markdown-body :global(p),
+  .markdown-body :global(li) {
+    color: var(--text-color);
+    line-height: 1.8;
+  }
+
+  .markdown-body :global(ul) {
+    margin: 0;
+    padding-left: 1.2rem;
+  }
+</style>

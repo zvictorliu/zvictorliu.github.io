@@ -1,21 +1,33 @@
 ---
-import { getRelativeLocaleUrl } from 'astro:i18n';
+import { getPathByLocale, getRelativeLocaleUrl } from 'astro:i18n';
+import { useTranslations, type Locale } from '../i18n';
 
-const lang = Astro.currentLocale || 'en';
-const t = lang === 'zh' 
-  ? { nav: { home: '首页', skills: '技能', education: '教育', experience: '经历', posts: '文章', publications: '发表', contact: '联系' } }
-  : { nav: { home: 'Home', skills: 'Skills', education: 'Education', experience: 'Experience', posts: 'Posts', publications: 'Publications', contact: 'Contact' } };
+const lang = (Astro.currentLocale || 'en') as Locale;
+const t = useTranslations(lang);
+const currentPath = Astro.url.pathname;
+const localePath = `/${getPathByLocale(lang)}`;
+const pathWithoutLocale = currentPath === localePath
+  ? '/'
+  : currentPath.startsWith(`${localePath}/`)
+    ? currentPath.slice(localePath.length)
+    : currentPath;
+const targetLang: Locale = lang === 'zh' ? 'en' : 'zh';
+const toggleLabel = targetLang === 'en' ? 'English' : '中文';
+const toggleUrl = getRelativeLocaleUrl(targetLang, pathWithoutLocale);
 
-type NavLabel = 'home' | 'skills' | 'education' | 'experience' | 'posts' | 'publications' | 'contact';
+type NavLabel = 'home' | 'about' | 'skills' | 'education' | 'experience' | 'posts' | 'publications' | 'contact';
+const homeUrl = getRelativeLocaleUrl(lang);
+const aboutUrl = getRelativeLocaleUrl(lang, '/about');
 
 const navItems: { label: NavLabel; url: string }[] = [
-  { label: 'home', url: '#' },
-  { label: 'skills', url: '#skills' },
-  { label: 'education', url: '#education' },
-  { label: 'experience', url: '#experience' },
-  { label: 'posts', url: '#posts' },
-  { label: 'publications', url: '#publications' },
-  { label: 'contact', url: '#contact' },
+  { label: 'home', url: homeUrl },
+  { label: 'about', url: aboutUrl },
+  { label: 'skills', url: `${homeUrl}#skills` },
+  { label: 'education', url: `${homeUrl}#education` },
+  { label: 'experience', url: `${homeUrl}#experience` },
+  { label: 'posts', url: `${homeUrl}#posts` },
+  { label: 'publications', url: `${homeUrl}#publications` },
+  { label: 'contact', url: `${homeUrl}#contact` },
 ];
 ---
 
@@ -36,10 +48,7 @@ const navItems: { label: NavLabel; url: string }[] = [
             </li>
           ))}
         </ul>
-        <div class="lang-switch">
-          <a href={getRelativeLocaleUrl('en')} class="lang-btn">English</a>
-          <a href={getRelativeLocaleUrl('zh')} class="lang-btn">中文</a>
-        </div>
+        <a href={toggleUrl} class="lang-toggle">{toggleLabel}</a>
       </div>
     </div>
   </nav>
@@ -116,13 +125,12 @@ const navItems: { label: NavLabel; url: string }[] = [
     cursor: pointer;
   }
 
-  .lang-switch {
-    display: flex;
-    gap: 0.5rem;
+  .lang-toggle {
     margin-left: 1rem;
-  }
-
-  .lang-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 3.5rem;
     padding: 0.4rem 0.75rem;
     border: 1px solid var(--border-color);
     border-radius: 4px;
@@ -134,7 +142,7 @@ const navItems: { label: NavLabel; url: string }[] = [
     transition: all 0.2s;
   }
 
-  .lang-btn:hover {
+  .lang-toggle:hover {
     border-color: var(--accent-color);
     color: var(--accent-color);
   }

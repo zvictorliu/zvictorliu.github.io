@@ -117,8 +117,8 @@ const zhTranslations: TranslationKeys = {
     skills: '技能',
     education: '教育',
     experience: '经历',
-    posts: '文章',
-    publications: '出版物',
+    posts: '博客',
+    publications: '发表',
     contact: '联系'
   },
   profile: {
@@ -141,9 +141,9 @@ const zhTranslations: TranslationKeys = {
     title: '工作经历'
   },
   posts: {
-    title: '最新文章',
+    title: '最新博客',
     minRead: '分钟阅读',
-    seeAll: '查看所有文章'
+    seeAll: '查看所有博客'
   },
   publications: {
     title: '发表情况',

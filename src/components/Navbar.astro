@@ -18,6 +18,8 @@ const toggleUrl = getRelativeLocaleUrl(targetLang, pathWithoutLocale);
 type NavLabel = 'home' | 'about' | 'skills' | 'education' | 'experience' | 'posts' | 'publications' | 'contact';
 const homeUrl = getRelativeLocaleUrl(lang);
 const aboutUrl = getRelativeLocaleUrl(lang, '/about');
+const postsUrl = getRelativeLocaleUrl(lang, '/post');
+const publicationsUrl = getRelativeLocaleUrl(lang, '/publication');
 
 const navItems: { label: NavLabel; url: string }[] = [
   { label: 'home', url: homeUrl },
@@ -25,8 +27,8 @@ const navItems: { label: NavLabel; url: string }[] = [
   { label: 'skills', url: `${homeUrl}#skills` },
   { label: 'education', url: `${homeUrl}#education` },
   { label: 'experience', url: `${homeUrl}#experience` },
-  { label: 'posts', url: `${homeUrl}#posts` },
-  { label: 'publications', url: `${homeUrl}#publications` },
+  { label: 'posts', url: postsUrl },
+  { label: 'publications', url: publicationsUrl },
   { label: 'contact', url: `${homeUrl}#contact` },
 ];
 ---

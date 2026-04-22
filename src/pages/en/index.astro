@@ -9,6 +9,24 @@ const recentPosts = (await getCollection('post', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
 
+const recentProjects = (await getCollection('projects', ({ data }) => !data.draft))
+  .sort((a, b) => (b.data.endDate?.valueOf() ?? 0) - (a.data.endDate?.valueOf() ?? 0))
+  .slice(0, 3);
+
+const formatProjectDateEn = (project: (typeof recentProjects)[number]) => {
+  const start = project.data.startDate ?? project.data.date;
+  const end = project.data.endDate ?? project.data.date;
+  if (start && project.data.ongoing) {
+    return `${start.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })} - Present`;
+  }
+  if (start && end) {
+    return `${start.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}`;
+  }
+  if (start) return start.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  if (end) return end.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  return 'Date TBD';
+};
+
 const recentPublications = (await getCollection('publication'))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
@@ -18,7 +36,7 @@ const profile = {
   title: 'A postgraduate',
   institution: 'Shanghai Jiao Tong University',
   institutionUrl: 'https://www.sjtu.edu.cn/',
-  bio: "Welcome! I am Zongwei Liu (刘宗炜), a graduate student at SJTU, majoring in Electronic Information. I am pursuing a master degree in Shanghai Jiao Tong University. Hope I can graduate smoothly and have a beautiful life in the future.",
+  bio: "Welcome! I am Zongwei Liu (Zongwei Liu), a graduate student at SJTU, majoring in Electronic Information. I am pursuing a master degree in Shanghai Jiao Tong University. Hope I can graduate smoothly and have a beautiful life in the future.",
   avatar: '/images/avatar.jpg',
   interests: ['AI Agent', 'Linux'],
   education: [
@@ -26,12 +44,12 @@ const profile = {
     { course: 'BSc in Measurement And Instrumentation', institution: 'Shanghai Jiao Tong University', year: '2024' },
   ],
   skills: [
-    { name: 'Python', percent: 70, icon: 'fab fa-python', category: 'Technical' },
-    { name: 'Linux', percent: 60, icon: 'fab fa-linux', category: 'Technical' },
-    { name: 'C/C++', percent: 80, icon: 'fab fa-c', category: 'Technical' },
-    { name: 'Movies & TV Series', percent: 100, icon: 'fas fa-film', category: 'Hobbies' },
-    { name: 'History', percent: 90, icon: 'fas fa-book', category: 'Hobbies' },
-    { name: 'Games', percent: 70, icon: 'fas fa-gamepad', category: 'Hobbies' },
+    { name: 'Python', percent: 80, icon: 'fab fa-python', category: 'ProgrammingLanguages' },
+    { name: 'C/C++', percent: 70, icon: 'fas fa-code', category: 'ProgrammingLanguages' },
+    { name: 'TypeScript', percent: 65, icon: 'fas fa-code', category: 'ProgrammingLanguages' },
+    { name: 'Linux', percent: 75, icon: 'fab fa-linux', category: 'TechStack' },
+    { name: 'Git', percent: 70, icon: 'fab fa-git-alt', category: 'TechStack' },
+    { name: 'RAG', percent: 65, icon: 'fas fa-database', category: 'TechStack' },
   ],
   experience: [
     {
@@ -159,9 +177,9 @@ const contact = {
     <div class="container">
       <h2 class="section-title">Skills</h2>
       <div class="skills-grid">
-        {['Technical', 'Hobbies'].map((category) => (
+        {['ProgrammingLanguages', 'TechStack'].map((category) => (
           <div class="skill-category">
-            <h3 class="skill-category-title">{category}</h3>
+            <h3 class="skill-category-title">{category === 'ProgrammingLanguages' ? 'Programming Languages' : 'Tech Stack'}</h3>
             {profile.skills
               .filter((skill) => skill.category === category)
               .map((skill) => (
@@ -287,6 +305,44 @@ const contact = {
             <i class="fas fa-angle-right"></i>
           </a>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects" class="section projects-section">
+    <div class="container">
+      <h2 class="section-title">Projects</h2>
+      <div class="projects-list">
+        {recentProjects.map((project) => (
+          <article class="project-item">
+            <div class="project-content">
+              <h3 class="project-title">
+                <a href={`/project/${project.id.replace(/\.md$/, '')}/`}>{project.data.title}</a>
+              </h3>
+              <div class="project-meta">
+                <span class="project-date">
+                  {formatProjectDateEn(project)}
+                </span>
+              </div>
+              {project.data.summary && <p class="project-excerpt">{project.data.summary}</p>}
+              <div class="project-links">
+                <a href={`/project/${project.id.replace(/\.md$/, '')}/`} class="btn btn-sm">Details</a>
+                {project.data.repo && (
+                  <a href={project.data.repo} target="_blank" rel="noopener" class="btn btn-sm">Repo</a>
+                )}
+                {project.data.demo && (
+                  <a href={project.data.demo} target="_blank" rel="noopener" class="btn btn-sm">Demo</a>
+                )}
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+      <div class="see-all">
+        <a href="/project/">
+          See all projects
+          <i class="fas fa-angle-right"></i>
+        </a>
       </div>
     </div>
   </section>
@@ -631,6 +687,7 @@ const contact = {
   }
 
   .posts-list,
+  .projects-list,
   .publications-list {
     max-width: 800px;
     margin: 0 auto;
@@ -675,6 +732,41 @@ const contact = {
     height: 80px;
     object-fit: cover;
     border-radius: 4px;
+  }
+
+  .project-item {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: var(--card-bg);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .project-content {
+    flex: 1;
+  }
+
+  .project-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+  }
+
+  .project-meta {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+  }
+
+  .project-excerpt {
+    margin: 0 0 0.75rem 0;
+    color: var(--text-secondary);
+  }
+
+  .project-links {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
   }
 
   .publication-item {
@@ -858,6 +950,10 @@ const contact = {
     }
 
     .post-item {
+      flex-direction: column;
+    }
+
+    .project-item {
       flex-direction: column;
     }
 

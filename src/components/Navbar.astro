@@ -15,10 +15,11 @@ const targetLang: Locale = lang === 'zh' ? 'en' : 'zh';
 const toggleLabel = targetLang === 'en' ? 'English' : '中文';
 const toggleUrl = getRelativeLocaleUrl(targetLang, pathWithoutLocale);
 
-type NavLabel = 'home' | 'about' | 'skills' | 'education' | 'experience' | 'posts' | 'publications' | 'contact';
+type NavLabel = 'home' | 'about' | 'skills' | 'education' | 'experience' | 'posts' | 'projects' | 'publications' | 'contact';
 const homeUrl = getRelativeLocaleUrl(lang);
 const aboutUrl = getRelativeLocaleUrl(lang, '/about');
 const postsUrl = getRelativeLocaleUrl(lang, '/post');
+const projectsUrl = getRelativeLocaleUrl(lang, '/project');
 const publicationsUrl = getRelativeLocaleUrl(lang, '/publication');
 
 const navItems: { label: NavLabel; url: string }[] = [
@@ -28,6 +29,7 @@ const navItems: { label: NavLabel; url: string }[] = [
   { label: 'education', url: `${homeUrl}#education` },
   { label: 'experience', url: `${homeUrl}#experience` },
   { label: 'posts', url: postsUrl },
+  { label: 'projects', url: projectsUrl },
   { label: 'publications', url: publicationsUrl },
   { label: 'contact', url: `${homeUrl}#contact` },
 ];

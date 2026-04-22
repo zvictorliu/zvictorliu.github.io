@@ -1,0 +1,163 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({
+    params: { slug: project.id.replace(/\.md$/, '') },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const startDate = project.data.startDate ?? project.data.date;
+const endDate = project.data.endDate ?? project.data.date;
+const dateText = startDate
+  ? `${startDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} - ${
+      project.data.ongoing
+        ? 'Present'
+        : endDate
+          ? endDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+          : 'Date TBD'
+    }`
+  : endDate
+    ? endDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+    : 'Date TBD';
+---
+
+<Layout title={`${project.data.title} - Zongwei Liu`}>
+  <article class="project-page">
+    <header class="project-header">
+      <h1 class="project-title">{project.data.title}</h1>
+      <div class="project-meta">
+        <span class="project-date">
+          <i class="fas fa-calendar"></i>
+          {dateText}
+        </span>
+        {project.data.tags && project.data.tags.length > 0 && (
+          <div class="project-tags">
+            {project.data.tags.map((tag: string) => (
+              <span class="tag">{tag}</span>
+            ))}
+          </div>
+        )}
+      </div>
+      {project.data.summary && <p class="project-summary">{project.data.summary}</p>}
+      <div class="project-links">
+        {project.data.repo && (
+          <a href={project.data.repo} target="_blank" rel="noopener" class="btn btn-sm">Repository</a>
+        )}
+        {project.data.demo && (
+          <a href={project.data.demo} target="_blank" rel="noopener" class="btn btn-sm">Demo</a>
+        )}
+      </div>
+    </header>
+
+    <section class="project-content">
+      <Content />
+    </section>
+  </article>
+</Layout>
+
+<style>
+  .project-page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+  }
+
+  .project-header {
+    margin-bottom: 1.8rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1.2rem;
+  }
+
+  .project-title {
+    font-size: 2rem;
+    line-height: 1.35;
+    margin-bottom: 0.8rem;
+  }
+
+  .project-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.6rem;
+  }
+
+  .project-date {
+    color: var(--text-secondary);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .project-date i {
+    color: var(--accent-color);
+  }
+
+  .project-tags {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    padding: 0.2rem 0.6rem;
+    background: var(--bg-color);
+    color: var(--text-secondary);
+    border-radius: 16px;
+    font-size: 0.8rem;
+    border: 1px solid var(--border-color);
+  }
+
+  .project-summary {
+    color: var(--text-secondary);
+    margin-bottom: 0.8rem;
+  }
+
+  .project-links {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+  }
+
+  .btn:hover {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #fff;
+  }
+
+  .project-content {
+    line-height: 1.8;
+  }
+
+  .project-content :global(h2) {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .project-content :global(h3) {
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .project-content :global(p) {
+    margin-bottom: 1.25rem;
+  }
+</style>

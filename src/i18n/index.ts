@@ -9,6 +9,7 @@ export type TranslationKeys = {
     education: string;
     experience: string;
     posts: string;
+    projects: string;
     publications: string;
     contact: string;
   };
@@ -22,8 +23,8 @@ export type TranslationKeys = {
   };
   skills: {
     title: string;
-    technical: string;
-    hobbies: string;
+    techStack: string;
+    programmingLanguages: string;
   };
   education: {
     title: string;
@@ -34,6 +35,10 @@ export type TranslationKeys = {
   posts: {
     title: string;
     minRead: string;
+    seeAll: string;
+  };
+  projects: {
+    title: string;
     seeAll: string;
   };
   publications: {
@@ -65,6 +70,7 @@ const enTranslations: TranslationKeys = {
     education: 'Education',
     experience: 'Experience',
     posts: 'Posts',
+    projects: 'Projects',
     publications: 'Publications',
     contact: 'Contact'
   },
@@ -78,8 +84,8 @@ const enTranslations: TranslationKeys = {
   },
   skills: {
     title: 'Skills',
-    technical: 'Technical',
-    hobbies: 'Hobbies'
+    techStack: 'Tech Stack',
+    programmingLanguages: 'Programming Languages'
   },
   education: {
     title: 'Education'
@@ -91,6 +97,10 @@ const enTranslations: TranslationKeys = {
     title: 'Recent Posts',
     minRead: 'min read',
     seeAll: 'See all posts'
+  },
+  projects: {
+    title: 'Projects',
+    seeAll: 'See all projects'
   },
   publications: {
     title: 'Publications',
@@ -118,6 +128,7 @@ const zhTranslations: TranslationKeys = {
     education: '教育',
     experience: '经历',
     posts: '博客',
+    projects: '项目',
     publications: '发表',
     contact: '联系'
   },
@@ -131,8 +142,8 @@ const zhTranslations: TranslationKeys = {
   },
   skills: {
     title: '技能',
-    technical: '技术',
-    hobbies: '爱好'
+    techStack: '技术栈',
+    programmingLanguages: '编程语言'
   },
   education: {
     title: '教育经历'
@@ -144,6 +155,10 @@ const zhTranslations: TranslationKeys = {
     title: '最新博客',
     minRead: '分钟阅读',
     seeAll: '查看所有博客'
+  },
+  projects: {
+    title: '项目',
+    seeAll: '查看所有项目'
   },
   publications: {
     title: '发表情况',

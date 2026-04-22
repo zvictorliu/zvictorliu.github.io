@@ -10,6 +10,24 @@ const recentPosts = (await getCollection('post', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
 
+const recentProjects = (await getCollection('projects', ({ data }) => !data.draft))
+  .sort((a, b) => (b.data.endDate?.valueOf() ?? 0) - (a.data.endDate?.valueOf() ?? 0))
+  .slice(0, 3);
+
+const formatProjectDateZh = (project: (typeof recentProjects)[number]) => {
+  const start = project.data.startDate ?? project.data.date;
+  const end = project.data.endDate ?? project.data.date;
+  if (start && project.data.ongoing) {
+    return `${start.toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' })} - 至今`;
+  }
+  if (start && end) {
+    return `${start.toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' })}`;
+  }
+  if (start) return start.toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' });
+  if (end) return end.toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' });
+  return '日期待定';
+};
+
 const recentPublications = (await getCollection('publication'))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
@@ -18,24 +36,27 @@ const profile = {
   name: '刘宗炜',
   institution: '上海交通大学',
   institutionUrl: 'https://www.sjtu.edu.cn/',
-  bio: `吾本蜀人，负笈申江。庚子入交大，倏忽六载。
-忆昔初中信息课上，初触键盘荧屏，便知此生当与代码为伴。然人生多起伏，命运总难期。本科虽未契初愿，仍向嵌入式方向深耕；升学之际，未敢轻试跨考408之锋，遂择保研本校，转而钻研导航定位算法。
-今对Agent开发颇感兴趣，志在智能体构建，此番或可返归初心。虽乍看似涉猎未深，然几经赛道更迭，方信电子信息一脉，底层逻辑本自相通。电信范畴之内，实无不可跨越之鸿沟。
-行远自迩，笃行不怠。愿持此心，再赴新程。
+//   bio: `吾本蜀人，负笈申江。庚子入交大，倏忽六载。
+// 忆昔初中信息课上，初触键盘荧屏，便知此生当与代码为伴。然人生多起伏，命运总难期。本科虽未契初愿，仍向嵌入式方向深耕；升学之际，未敢轻试跨考408之锋，遂择保研本校，转而钻研导航定位算法。
+// 今对Agent开发颇感兴趣，志在智能体构建，此番或可返归初心。虽乍看似涉猎未深，然几经赛道更迭，方信电子信息一脉，底层逻辑本自相通。电信范畴之内，实无不可跨越之鸿沟。
+// 行远自迩，笃行不怠。愿持此心，再赴新程。
+//   `,
+  bio: `我是刘宗炜，来自四川，本科毕业于上海交通大学电院，目前同在上海交通大学攻读硕士。
+  目前对 AI 智能体开发感兴趣，有意从事相关职业；做过 Agentic Workflow 相关项目，搭建过 Agent Harness 系统，目前也在学习 Agent Evaluation、RAG 等方面的内容。
   `,
   avatar: '/images/avatar.jpg',
-  interests: ['AI Agent', 'Linux'],
+  interests: ['Agent 框架', 'RAG', 'Agent Evaluation'],
   education: [
     { course: '电子信息', institution: '上海交通大学', year: '至今' },
     { course: '测控技术与仪器', institution: '上海交通大学', year: '2024' },
   ],
   skills: [
-    { name: 'Python', percent: 80, icon: 'fab fa-python', category: 'Technical' },
-    { name: 'Linux', percent: 70, icon: 'fab fa-linux', category: 'Technical' },
-    { name: 'C/C++', percent: 60, icon: 'fab fa-c', category: 'Technical' },
-    { name: '电影 & 电视剧', percent: 100, icon: 'fas fa-film', category: 'Hobbies' },
-    { name: '历史', percent: 90, icon: 'fas fa-book', category: 'Hobbies' },
-    { name: '游戏', percent: 70, icon: 'fas fa-gamepad', category: 'Hobbies' },
+    { name: 'Python', percent: 80, icon: 'fab fa-python', category: 'ProgrammingLanguages' },
+    { name: 'C/C++', percent: 70, icon: 'fas fa-code', category: 'ProgrammingLanguages' },
+    { name: 'TypeScript', percent: 65, icon: 'fas fa-typescript', category: 'ProgrammingLanguages' },
+    { name: 'Linux', percent: 75, icon: 'fab fa-linux', category: 'TechStack' },
+    { name: 'Git', percent: 70, icon: 'fab fa-git-alt', category: 'TechStack' },
+    { name: 'Docker', percent: 65, icon: 'fas fa-docker', category: 'TechStack' },
   ],
   experience: [
     {
@@ -162,9 +183,9 @@ const contact = {
     <div class="container">
       <h2 class="section-title">{t.skills.title}</h2>
       <div class="skills-grid">
-        {['Technical', 'Hobbies'].map((category) => (
+        {['ProgrammingLanguages', 'TechStack'].map((category) => (
           <div class="skill-category">
-            <h3 class="skill-category-title">{category === 'Technical' ? t.skills.technical : t.skills.hobbies}</h3>
+            <h3 class="skill-category-title">{category === 'ProgrammingLanguages' ? t.skills.programmingLanguages : t.skills.techStack}</h3>
             {profile.skills
               .filter((skill) => skill.category === category)
               .map((skill) => (
@@ -290,6 +311,44 @@ const contact = {
             <i class="fas fa-angle-right"></i>
           </a>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects" class="section projects-section">
+    <div class="container">
+      <h2 class="section-title">{t.projects.title}</h2>
+      <div class="projects-list">
+        {recentProjects.map((project) => (
+          <article class="project-item">
+            <div class="project-content">
+              <h3 class="project-title">
+                <a href={`/project/${project.id.replace(/\.md$/, '')}/`}>{project.data.title}</a>
+              </h3>
+              <div class="project-meta">
+                <span class="project-date">
+                  {formatProjectDateZh(project)}
+                </span>
+              </div>
+              {project.data.summary && <p class="project-excerpt">{project.data.summary}</p>}
+              <div class="project-links">
+                <a href={`/project/${project.id.replace(/\.md$/, '')}/`} class="btn btn-sm">详情</a>
+                {project.data.repo && (
+                  <a href={project.data.repo} target="_blank" rel="noopener" class="btn btn-sm">Repo</a>
+                )}
+                {project.data.demo && (
+                  <a href={project.data.demo} target="_blank" rel="noopener" class="btn btn-sm">Demo</a>
+                )}
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+      <div class="see-all">
+        <a href="/project/">
+          {t.projects.seeAll}
+          <i class="fas fa-angle-right"></i>
+        </a>
       </div>
     </div>
   </section>
@@ -457,6 +516,7 @@ const contact = {
     line-height: 1.8;
     margin-bottom: 2rem;
     text-align: justify;
+    /* white-space: pre-line; */
   }
 
   .info-grid {
@@ -634,6 +694,7 @@ const contact = {
   }
 
   .posts-list,
+  .projects-list,
   .publications-list {
     max-width: 800px;
     margin: 0 auto;
@@ -678,6 +739,41 @@ const contact = {
     height: 80px;
     object-fit: cover;
     border-radius: 4px;
+  }
+
+  .project-item {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: var(--card-bg);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .project-content {
+    flex: 1;
+  }
+
+  .project-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+  }
+
+  .project-meta {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+  }
+
+  .project-excerpt {
+    margin: 0 0 0.75rem 0;
+    color: var(--text-secondary);
+  }
+
+  .project-links {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
   }
 
   .publication-item {
@@ -861,6 +957,10 @@ const contact = {
     }
 
     .post-item {
+      flex-direction: column;
+    }
+
+    .project-item {
       flex-direction: column;
     }
 

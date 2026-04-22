@@ -1,6 +1,6 @@
 ---
 layout: ../layouts/MarkdownPageLayout.astro
-title: 关于我 | 刘宗炜
+title: 关于我 | Zongwei Liu
 locale: zh
 ---
 

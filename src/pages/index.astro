@@ -10,6 +10,10 @@ const recentPosts = (await getCollection('post', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
 
+const recentPublications = (await getCollection('publication'))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+
 const profile = {
   name: '刘宗炜',
   institution: '上海交通大学',
@@ -55,17 +59,17 @@ const profile = {
   ],
   work: [
     {
-      title: '研究实习生',
+      title: 'AI研发实习',
       company: '华测导航',
       companyUrl: 'https://www.chcnav.com/',
       logo: '/media/icons/brands/huace.jpg',
       location: '上海，中国',
       dateStart: '2025年6月',
       dateEnd: '至今',
-      description: '从事GNSS信号处理和非视距信号抑制算法研究。',
+      description: '将 AI 与团队工作结合，开发提效工具',
     },
     {
-      title: '开发实习生',
+      title: '应用开发实习',
       company: '软银机器人',
       companyUrl: 'https://www.softbankrobotics.com.cn/',
       logo: '/media/icons/brands/softbank-robotics.png',
@@ -79,26 +83,6 @@ const profile = {
     { icon: 'fas fa-envelope', link: 'mailto:zvictorliu@outlook.com', label: 'Email' },
     { icon: 'fab fa-github', link: 'https://github.com/zvictorliu', label: 'GitHub' },
     { icon: 'fas fa-microchip', link: 'https://zvictorliu.github.io/techBlog/', label: 'Tech Blog' },
-  ],
-  publications: [
-    {
-      title: 'Performance of GNSS SPP/PPP/RTK with mitigation on NLOS signals in proximity to building edges',
-      authors: ['Zongwei Liu', 'Yan Xiang', 'Mingxiang Gu', 'Yifan Zhao', 'Ruiyang Zhou', 'Ling Pei'],
-      year: '2025',
-      journal: 'Advances in Space Research',
-      doi: 'https://doi.org/10.1016/j.asr.2025.09.038',
-      url: '/publication/liu-2025/',
-      highlightedAuthor: 'Zongwei Liu',
-    },
-    {
-      title: 'SVA: A Street-View-Aided GNSS Positioning Framework With 2DSDM and Likelihood Road for NLOS/Multipath Mitigation',
-      authors: ['Mingxiang Gu', 'Tao Li', 'Guoqing Liu', 'Zongwei Liu', 'Chaoran Xiong', 'Chao Wang', 'Rui Duan', 'Fanchen Meng', 'Yan Xiang', 'Ling Pei'],
-      year: '2025',
-      journal: 'IEEE ROBOTICS AND AUTOMATION LETTERS',
-      doi: 'https://doi.org/10.1109/LRA.2025.3583628',
-      url: '/publication/gu-2025/',
-      highlightedAuthor: 'Zongwei Liu',
-    },
   ],
 };
 
@@ -314,27 +298,27 @@ const contact = {
     <div class="container">
       <h2 class="section-title">{t.publications.title}</h2>
       <div class="publications-list">
-        {profile.publications.map((pub) => (
+        {recentPublications.map((pub) => (
           <div class="publication-item">
             <i class="far fa-file-alt pub-icon"></i>
             <div class="pub-content">
               <p class="pub-authors">
-                {pub.authors.map((author, i) => (
-                  <span class={author === pub.highlightedAuthor ? 'highlighted' : ''}>
-                    {author}{i < pub.authors.length - 1 ? ', ' : ''}
+                {pub.data.authors.map((author, i) => (
+                  <span class={author === pub.data.highlightedAuthor ? 'highlighted' : ''}>
+                    {author}{i < pub.data.authors.length - 1 ? ', ' : ''}
                   </span>
                 ))}
-                ({pub.year}).
+                ({pub.data.date.getFullYear()}).
               </p>
               <h3 class="pub-title">
-                <a href={pub.url}>{pub.title}</a>
+                <a href={`/publication/${pub.id.replace(/\.md$/, '')}`}>{pub.data.title}</a>
               </h3>
               <p class="pub-journal">
-                <em>{pub.journal}</em>
+                <em>{pub.data.journal}</em>
               </p>
               <div class="pub-links">
-                <a href={pub.doi} target="_blank" rel="noopener" class="btn btn-sm">DOI</a>
-                <a href={pub.url} class="btn btn-sm">URL</a>
+                <a href={pub.data.doi} target="_blank" rel="noopener" class="btn btn-sm">DOI</a>
+                <a href={`/publication/${pub.id.replace(/\.md$/, '')}`} class="btn btn-sm">URL</a>
               </div>
             </div>
           </div>

@@ -1,0 +1,128 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const publications = (await getCollection('publication'))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<Layout title="Publications - Zongwei Liu">
+  <section class="publications-page">
+    <div class="container">
+      <header class="page-header">
+        <h1>Publications</h1>
+        <p class="page-subtitle">Research papers and publications</p>
+      </header>
+
+      <div class="publications-list">
+        {publications.map((pub) => (
+          <article class="publication-card">
+            <p class="pub-authors">
+              {pub.data.authors.map((author, i) => (
+                <span class={author === pub.data.highlightedAuthor ? 'highlighted' : ''}>
+                  {author}{i < pub.data.authors.length - 1 ? ', ' : ''}
+                </span>
+              ))}
+              ({pub.data.date.getFullYear()}).
+            </p>
+            <h2 class="pub-title">
+              <a href={`/publication/${pub.id.replace(/\.md$/, '')}`}>{pub.data.title}</a>
+            </h2>
+            <p class="pub-journal">
+              <em>{pub.data.journal}</em>
+            </p>
+            {pub.data.summary && <p class="pub-summary">{pub.data.summary}</p>}
+            <div class="pub-links">
+              <a href={`/publication/${pub.id.replace(/\.md$/, '')}`} class="btn btn-sm">Details</a>
+              <a href={pub.data.doi} target="_blank" rel="noopener" class="btn btn-sm">DOI</a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .publications-page {
+    padding: 3rem 0 5rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .page-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+  }
+
+  .publications-list {
+    display: grid;
+    gap: 1rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .publication-card {
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 1.25rem;
+  }
+
+  .pub-authors {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .highlighted {
+    font-weight: 700;
+    color: var(--text-color);
+  }
+
+  .pub-title {
+    font-size: 1.15rem;
+    margin-bottom: 0.35rem;
+    line-height: 1.4;
+  }
+
+  .pub-journal {
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+  }
+
+  .pub-summary {
+    color: var(--text-secondary);
+    margin-bottom: 0.8rem;
+  }
+
+  .pub-links {
+    display: flex;
+    gap: 0.6rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+  }
+
+  .btn:hover {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #fff;
+  }
+</style>

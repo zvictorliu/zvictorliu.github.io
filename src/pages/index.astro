@@ -1,22 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import HomePage from '../components/HomePage.astro';
-import { getCollection } from 'astro:content';
 import { homeByLocale, contactEmail } from '../data/home';
+import { loadHomeCollections } from '../data/collections';
 
 const locale = 'zh' as const;
 const { profile, path } = homeByLocale[locale];
-
-const recentPosts = (await getCollection('post', ({ data }) => !data.draft))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 3);
-
-const recentProjects = (await getCollection('projects', ({ data }) => !data.draft))
-  .sort((a, b) => (b.data.endDate?.valueOf() ?? 0) - (a.data.endDate?.valueOf() ?? 0));
-
-const recentPublications = (await getCollection('publication'))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 3);
+const { recentPosts, recentProjects, recentPublications } = await loadHomeCollections();
 ---
 
 <Layout locale={locale} title="刘宗炜">

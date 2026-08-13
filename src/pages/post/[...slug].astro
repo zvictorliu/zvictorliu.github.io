@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { getCollection, render } from 'astro:content';
+import type { Locale } from '../../i18n';
 
 export async function getStaticPaths() {
   const posts = await getCollection('post');
@@ -10,145 +11,36 @@ export async function getStaticPaths() {
   }));
 }
 
+const locale = (Astro.currentLocale || 'zh') as Locale;
+const dateLocale = locale === 'zh' ? 'zh-CN' : 'en-US';
 const { post } = Astro.props;
 const { Content } = await render(post);
 ---
 
-<Layout title={`${post.data.title} - Zongwei Liu`}>
-  <article class="post-page">
-    <header class="post-header">
-      <h1 class="post-title">{post.data.title}</h1>
-      <div class="post-meta">
-        <span class="post-date">
-          <i class="fas fa-calendar"></i>
-          {post.data.date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}
-        </span>
-        <span class="post-author">
-          <i class="fas fa-user"></i>
-          {post.data.author || 'Zongwei Liu'}
-        </span>
-      </div>
+<Layout title={`${post.data.title} - Zongwei Liu`} locale={locale}>
+  <article class="article-page">
+    <header class="article-header">
+      <h1>{post.data.title}</h1>
+      <p class="entry-meta">
+        {post.data.date.toLocaleDateString(dateLocale, { year: 'numeric', month: 'long', day: 'numeric' })}
+        {post.data.author && (
+          <>
+            <span class="meta-sep">·</span>
+            {post.data.author}
+          </>
+        )}
+      </p>
       {post.data.tags && post.data.tags.length > 0 && (
-        <div class="post-tags">
+        <div class="tag-row">
           {post.data.tags.map((tag: string) => (
             <span class="tag">{tag}</span>
           ))}
         </div>
       )}
     </header>
-    <div class="post-content">
+    <div class="article-content">
       <Content />
     </div>
   </article>
 </Layout>
 
-<style>
-  .post-page {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 3rem 1.5rem 5rem;
-  }
-
-  .post-header {
-    margin-bottom: 2rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  .post-title {
-    font-size: 2.2rem;
-    margin-bottom: 1rem;
-    line-height: 1.3;
-  }
-
-  .post-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    color: var(--text-secondary);
-    font-size: 0.95rem;
-    margin-bottom: 1rem;
-  }
-
-  .post-meta span {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  .post-meta i {
-    color: var(--accent-color);
-  }
-
-  .post-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .tag {
-    padding: 0.2rem 0.6rem;
-    background: var(--bg-color);
-    color: var(--text-secondary);
-    border-radius: 16px;
-    font-size: 0.85rem;
-    border: 1px solid var(--border-color);
-  }
-
-  .post-content {
-    line-height: 1.8;
-    font-size: 1.1rem;
-  }
-
-  .post-content :global(h2) {
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-  }
-
-  .post-content :global(h3) {
-    margin-top: 1.5rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .post-content :global(p) {
-    margin-bottom: 1.25rem;
-  }
-
-  .post-content :global(pre) {
-    padding: 1rem;
-    border-radius: 8px;
-    overflow-x: auto;
-    margin: 1.5rem 0;
-  }
-
-  .post-content :global(code) {
-    font-family: 'Fira Code', 'Source Code Pro', monospace;
-  }
-
-  .post-content :global(a) {
-    color: var(--accent-color);
-  }
-
-  .post-content :global(a:hover) {
-    text-decoration: underline;
-  }
-
-  .post-content :global(blockquote) {
-    border-left: 4px solid var(--accent-color);
-    padding-left: 1rem;
-    margin: 1.5rem 0;
-    color: var(--text-secondary);
-    font-style: italic;
-  }
-
-  .post-content :global(img) {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    margin: 1.5rem 0;
-  }
-</style>

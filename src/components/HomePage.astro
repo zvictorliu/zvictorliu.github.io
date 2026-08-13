@@ -238,78 +238,66 @@ const postUrl = (id: string) => getRelativeLocaleUrl(locale, `/post/${id.replace
 <style>
   .about-grid {
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 160px 1fr;
     gap: 3rem;
     align-items: start;
   }
 
   .profile-card {
-    text-align: center;
-    background: var(--card-bg);
-    padding: 2rem;
-    border-radius: 8px;
+    text-align: left;
   }
 
   .avatar-wrapper {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
   }
 
   .avatar {
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
+    width: 132px;
+    height: 132px;
+    border-radius: 2px;
     object-fit: cover;
-    border: 4px solid var(--border-color);
   }
 
   .profile-name {
-    font-size: 1.75rem;
-    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+    margin-bottom: 0.35rem;
   }
 
   .profile-title {
-    font-size: 1.05rem;
+    font-size: 0.95rem;
     color: var(--text-secondary);
     font-weight: 400;
-    margin: 0 0 0.5rem;
+    margin: 0 0 0.35rem;
   }
 
   .profile-institution {
-    font-size: 1rem;
-    margin: 0 0 1.5rem;
+    font-size: 0.95rem;
+    margin: 0 0 1.25rem;
   }
 
   .social-links {
     display: flex;
-    justify-content: center;
     flex-wrap: wrap;
-    gap: 0.75rem 1.25rem;
+    gap: 0.65rem 1rem;
   }
 
   .social-links a {
     color: var(--text-secondary);
-    font-size: 0.9rem;
-  }
-
-  .social-links a:hover {
-    color: var(--accent-color);
-  }
-
-  .bio-content .section-title {
-    text-align: left;
-    margin-bottom: 1.5rem;
+    font-size: 0.88rem;
   }
 
   .bio-text {
-    font-size: 1.1rem;
-    line-height: 1.8;
+    font-size: 1.05rem;
+    line-height: 1.85;
     margin: 0 0 1rem;
-    text-align: justify;
   }
 
   .info-title {
-    font-size: 1rem;
-    margin: 1.5rem 0 0.75rem;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    margin: 1.75rem 0 0.7rem;
     color: var(--text-secondary);
   }
 
@@ -319,43 +307,36 @@ const postUrl = (id: string) => getRelativeLocaleUrl(locale, `/post/${id.replace
     margin: 0;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.45rem 1rem;
   }
 
   .interests-list li {
-    padding: 0.2rem 0.7rem;
-    border: 1px solid var(--border-color);
-    border-radius: 999px;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: var(--text-secondary);
   }
 
-  .entry-list,
-  .experience-timeline {
-    max-width: 800px;
-    margin: 0 auto;
+  .entry {
+    padding: 1.2rem 0;
+    border-bottom: 1px solid var(--border-color);
   }
 
-  .entry {
-    background: var(--card-bg);
-    border-radius: 8px;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
+  .entry:first-child {
+    padding-top: 0;
   }
 
   .entry-title {
-    margin: 0 0 0.4rem;
-    font-size: 1.15rem;
+    margin: 0 0 0.35rem;
+    font-size: 1.12rem;
   }
 
   .entry-meta {
-    margin: 0 0 0.6rem;
-    font-size: 0.9rem;
+    margin: 0 0 0.5rem;
+    font-size: 0.88rem;
     color: var(--text-secondary);
   }
 
   .entry-excerpt {
-    margin: 0 0 0.75rem;
+    margin: 0 0 0.65rem;
     color: var(--text-secondary);
   }
 
@@ -363,39 +344,49 @@ const postUrl = (id: string) => getRelativeLocaleUrl(locale, `/post/${id.replace
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
+    font-size: 0.9rem;
+  }
+
+  .entry-links a {
+    color: var(--text-secondary);
   }
 
   .pub-authors {
-    margin: 0 0 0.4rem;
-    font-size: 0.95rem;
+    margin: 0 0 0.35rem;
+    font-size: 0.92rem;
+    color: var(--text-secondary);
   }
 
   .pub-authors .highlighted {
+    color: var(--text-color);
     font-weight: 600;
   }
 
   .see-all {
-    text-align: center;
-    margin: 1.5rem 0 0;
+    margin: 1.25rem 0 0;
+  }
+
+  .see-all a {
+    color: var(--text-secondary);
   }
 
   .experience-item {
     display: flex;
-    gap: 1.5rem;
+    gap: 1.25rem;
   }
 
   .timeline-marker {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 0.5rem;
+    padding-top: 0.45rem;
   }
 
   .marker-dot {
-    width: 12px;
-    height: 12px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    border: 2px solid var(--accent-color);
+    border: 1px solid var(--accent-color);
     background: var(--bg-color);
   }
 
@@ -412,35 +403,34 @@ const postUrl = (id: string) => getRelativeLocaleUrl(locale, `/post/${id.replace
 
   .experience-card {
     flex: 1;
-    background: var(--card-bg);
-    padding: 1.5rem;
-    border-radius: 8px;
-    margin-bottom: 1.5rem;
+    padding: 0 0 1.75rem;
   }
 
   .card-header {
     display: flex;
-    gap: 1rem;
-    margin-bottom: 0.75rem;
+    gap: 0.9rem;
+    margin-bottom: 0.5rem;
   }
 
   .company-logo img {
-    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
   }
 
   .card-title {
-    margin: 0 0 0.25rem;
-    font-size: 1.1rem;
+    margin: 0 0 0.2rem;
+    font-size: 1.05rem;
   }
 
   .card-company {
-    margin: 0 0 0.25rem;
+    margin: 0 0 0.2rem;
     color: var(--text-secondary);
   }
 
   .card-meta {
     margin: 0;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     color: var(--text-secondary);
   }
 
@@ -453,34 +443,21 @@ const postUrl = (id: string) => getRelativeLocaleUrl(locale, `/post/${id.replace
     color: var(--text-secondary);
   }
 
-  .contact-block {
-    max-width: 800px;
-    text-align: center;
-  }
-
   .contact-text {
     color: var(--text-secondary);
-    margin: 0 0 0.75rem;
+    margin: 0 0 0.6rem;
   }
 
   .contact-email {
     margin: 0;
     font-size: 1.1rem;
+    font-family: var(--font-display);
   }
 
   @media (max-width: 768px) {
     .about-grid {
       grid-template-columns: 1fr;
       gap: 2rem;
-    }
-
-    .profile-card {
-      max-width: 350px;
-      margin: 0 auto;
-    }
-
-    .bio-content .section-title {
-      text-align: center;
     }
   }
 </style>

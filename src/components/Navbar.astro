@@ -66,7 +66,7 @@ const navItems = [
   }
 
   .container {
-    max-width: 1200px;
+    max-width: var(--page-width);
     margin: 0 auto;
     padding: 0 1.5rem;
     display: flex;
@@ -75,6 +75,7 @@ const navItems = [
   }
 
   .navbar-brand {
+    font-family: var(--font-display);
     font-size: 1.05rem;
     font-weight: 600;
     color: var(--text-color);
@@ -84,6 +85,7 @@ const navItems = [
 
   .navbar-brand:hover {
     color: var(--accent-color);
+    text-decoration: none;
   }
 
   .navbar-menu {
@@ -111,6 +113,7 @@ const navItems = [
   .nav-link:hover,
   .nav-link.active {
     color: var(--accent-color);
+    text-decoration: none;
   }
 
   .navbar-toggler {
@@ -141,6 +144,7 @@ const navItems = [
   .lang-toggle:hover {
     border-color: var(--accent-color);
     color: var(--accent-color);
+    text-decoration: none;
   }
 
   .hamburger {

@@ -6,6 +6,7 @@ export type TranslationKeys = {
     education: string;
     work: string;
     about: string;
+    room: string;
   };
   brand: string;
   profile: {
@@ -42,6 +43,9 @@ export type TranslationKeys = {
     title: string;
     message: string;
   };
+  room: {
+    hint: string;
+  };
 };
 
 type Translations = Record<Locale, TranslationKeys>;
@@ -52,6 +56,7 @@ const enTranslations: TranslationKeys = {
     education: 'Education',
     work: 'Work',
     about: 'About',
+    room: 'Room',
   },
   brand: 'Zongwei Liu',
   profile: {
@@ -88,6 +93,9 @@ const enTranslations: TranslationKeys = {
     title: 'Contact',
     message: 'Feel free to write. I read everything.',
   },
+  room: {
+    hint: 'Drag to look around · scroll to zoom',
+  },
 };
 
 const zhTranslations: TranslationKeys = {
@@ -96,6 +104,7 @@ const zhTranslations: TranslationKeys = {
     education: '教育',
     work: '做过的事',
     about: '关于',
+    room: '房间',
   },
   brand: '刘宗炜',
   profile: {
@@ -131,6 +140,9 @@ const zhTranslations: TranslationKeys = {
   contact: {
     title: '联系',
     message: '请随时联系我',
+  },
+  room: {
+    hint: '拖动视角 · 滚轮缩放',
   },
 };
 

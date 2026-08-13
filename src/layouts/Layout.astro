@@ -5,9 +5,10 @@ import { contactEmail } from '../data/home';
 interface Props {
   title?: string;
   locale?: string;
+  fullBleed?: boolean;
 }
 
-const { title = 'Zongwei Liu', locale } = Astro.props;
+const { title = 'Zongwei Liu', locale, fullBleed = false } = Astro.props;
 const lang = locale || Astro.currentLocale || 'en';
 ---
 
@@ -25,11 +26,12 @@ const lang = locale || Astro.currentLocale || 'en';
     />
     <title>{title}</title>
   </head>
-  <body>
+  <body class={fullBleed ? 'is-full-bleed' : undefined}>
     <Navbar />
     <main class="main-content">
       <slot />
     </main>
+    {!fullBleed && (
     <footer class="site-footer">
       <div class="container footer-row">
         <p class="copyright">&copy; {new Date().getFullYear()} Zongwei Liu</p>
@@ -38,6 +40,7 @@ const lang = locale || Astro.currentLocale || 'en';
         </p>
       </div>
     </footer>
+    )}
   </body>
 </html>
 
@@ -89,6 +92,15 @@ const lang = locale || Astro.currentLocale || 'en';
   .main-content {
     padding-top: var(--header-height);
     min-height: calc(100vh - 120px);
+  }
+
+  body.is-full-bleed {
+    overflow: hidden;
+  }
+
+  body.is-full-bleed .main-content {
+    height: 100vh;
+    min-height: 0;
   }
 
   .container {

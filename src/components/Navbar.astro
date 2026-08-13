@@ -20,12 +20,17 @@ const experienceUrl = `${homeUrl}#experience`;
 const educationUrl = `${homeUrl}#education`;
 const workUrl = `${homeUrl}#work`;
 const aboutUrl = getRelativeLocaleUrl(lang, '/about');
+const roomUrl = getRelativeLocaleUrl(lang, '/room');
+
+const stripSlash = (path: string) => path.replace(/\/$/, '') || '/';
+const currentNormalized = stripSlash(currentPath);
 
 const navItems = [
   { label: t.nav.education, url: educationUrl },
   { label: t.nav.experience, url: experienceUrl },
   { label: t.nav.work, url: workUrl },
   { label: t.nav.about, url: aboutUrl },
+  { label: t.nav.room, url: roomUrl },
 ];
 ---
 
@@ -42,7 +47,12 @@ const navItems = [
         <ul class="navbar-nav">
           {navItems.map((item) => (
             <li class="nav-item">
-              <a class="nav-link" href={item.url}>{item.label}</a>
+              <a
+                class:list={['nav-link', { active: stripSlash(item.url) === currentNormalized }]}
+                href={item.url}
+              >
+                {item.label}
+              </a>
             </li>
           ))}
         </ul>

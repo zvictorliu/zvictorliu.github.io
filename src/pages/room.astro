@@ -1,0 +1,12 @@
+---
+import Layout from '../layouts/Layout.astro';
+import RoomScene from '../components/RoomScene.astro';
+import { useTranslations } from '../i18n';
+
+const locale = 'zh' as const;
+const t = useTranslations(locale);
+---
+
+<Layout title={`${t.nav.room} | ${t.brand}`} locale={locale} fullBleed>
+  <RoomScene hint={t.room.hint} />
+</Layout>

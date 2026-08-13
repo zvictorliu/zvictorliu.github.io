@@ -1,13 +1,19 @@
 ---
 title: 面向导航类开源算法库学习的知识库智能助手
+titleEn: A knowledge-base assistant for learning navigation algorithm libraries
 startDate: 2025-06-25
 endDate: 2026-01-31
 summary: 一个面向导航算法库源码学习场景的 Agent 工作流项目，重点优化复杂问题下的检索与回答质量。
+summaryEn: An agent workflow for reading a complex navigation codebase, tuned so harder questions still get useful answers.
 tags:
   - Agentic Workflow
   - 导航算法
   - 知识库
 repo: https://github.com/zvictorliu/gici-aihub-webui
+image: /media/projects/huace-aihub.png
+featured: true
+award: 华测导航首届 AI 创新应用大赛人机协创奖
+awardEn: Human–AI Collaboration Award, CHC Navigation AI Application Contest
 ---
 
 在导航领域，一个特点是很多算法没有一个统一的标准，针对不同的场景和工程经验会有很多细节上的差异，所以我们就必须要深入探索所用的算法库的源码，了解它每个细节的处理是否还合理，但麻烦的是一个完整的导航算法框架往往也很复杂，想要一点一点弄明白的话就需要投入很多的精力和时间。

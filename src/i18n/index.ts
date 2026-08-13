@@ -25,6 +25,7 @@ export type TranslationKeys = {
     title: string;
     seeAll: string;
     details: string;
+    featured: string;
   };
   publications: {
     title: string;
@@ -63,6 +64,7 @@ const enTranslations: TranslationKeys = {
     title: 'Work',
     seeAll: 'See all projects',
     details: 'Details',
+    featured: 'Selected',
   },
   publications: {
     title: 'Publications',
@@ -99,6 +101,7 @@ const zhTranslations: TranslationKeys = {
     title: '作品',
     seeAll: '查看所有项目',
     details: '详情',
+    featured: '精选',
   },
   publications: {
     title: '发表',

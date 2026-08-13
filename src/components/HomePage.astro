@@ -50,51 +50,49 @@ const postListUrl = getRelativeLocaleUrl(locale, '/post');
 const projectUrl = (id: string) => getRelativeLocaleUrl(locale, `/project/${id.replace(/\.md$/, '')}`);
 const publicationUrl = (id: string) => getRelativeLocaleUrl(locale, `/publication/${id.replace(/\.md$/, '')}`);
 const postUrl = (id: string) => getRelativeLocaleUrl(locale, `/post/${id.replace(/\.md$/, '')}`);
+
+const featuredProject = recentProjects.find((project) => project.data.featured);
+const otherProjects = recentProjects
+  .filter((project) => project.id !== featuredProject?.id)
+  .slice(0, 2);
+
+const projectTitle = (project: CollectionEntry<'projects'>) =>
+  locale === 'en' && project.data.titleEn ? project.data.titleEn : project.data.title;
+
+const projectSummary = (project: CollectionEntry<'projects'>) =>
+  locale === 'en' && project.data.summaryEn ? project.data.summaryEn : project.data.summary;
+
+const projectAward = (project: CollectionEntry<'projects'>) =>
+  locale === 'en' && project.data.awardEn ? project.data.awardEn : project.data.award;
 ---
 
-<section id="about" class="section about-section">
-  <div class="container">
-    <div class="about-grid">
-      <div class="profile-card">
-        <div class="avatar-wrapper">
-          <img
-            src={profile.avatar}
-            alt={profile.name}
-            class="avatar"
-            onerror="this.src='https://www.gravatar.com/avatar/?d=mp&s=270'"
-          />
-        </div>
-        <h1 class="profile-name">{profile.name}</h1>
-        <p class="profile-title">{profile.title}</p>
-        <p class="profile-institution">
-          <a href={profile.institutionUrl} target="_blank" rel="noopener">
-            {profile.institution}
-          </a>
-        </p>
-        <div class="social-links">
-          {profile.social.map((item) => (
-            <a href={item.href} target={item.href.startsWith('mailto:') ? undefined : '_blank'} rel="noopener">
-              {item.label}
-            </a>
-          ))}
-        </div>
-      </div>
-
-      <div class="bio-content">
-        <h2 class="section-title">{t.about.biography}</h2>
-        {profile.bio.split('\n').filter(Boolean).map((paragraph) => (
-          <p class="bio-text">{paragraph.trim()}</p>
+<section id="about" class="section hero">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <p class="hero-kicker">
+        <a href={profile.institutionUrl} target="_blank" rel="noopener">{profile.institution}</a>
+        <span class="meta-sep">·</span>
+        {profile.role}
+      </p>
+      <h1 class="hero-name">{profile.name}</h1>
+      {profile.bio.split('\n').filter(Boolean).map((paragraph) => (
+        <p class="bio-text">{paragraph.trim()}</p>
+      ))}
+      <ul class="interests-list">
+        {profile.interests.map((interest) => (
+          <li>{interest}</li>
         ))}
-
-        <div class="info-section">
-          <h3 class="info-title">{t.about.interests}</h3>
-          <ul class="interests-list">
-            {profile.interests.map((interest) => (
-              <li>{interest}</li>
-            ))}
-          </ul>
-        </div>
+      </ul>
+      <div class="social-links">
+        {profile.social.map((item) => (
+          <a href={item.href} target={item.href.startsWith('mailto:') ? undefined : '_blank'} rel="noopener">
+            {item.label}
+          </a>
+        ))}
       </div>
+    </div>
+    <div class="hero-photo">
+      <img src={profile.avatar} alt={profile.name} class="avatar" />
     </div>
   </div>
 </section>
@@ -103,26 +101,59 @@ const postUrl = (id: string) => getRelativeLocaleUrl(locale, `/post/${id.replace
   <section id="work" class="section">
     <div class="container">
       <h2 class="section-title">{t.work.title}</h2>
-      <div class="entry-list">
-        {recentProjects.map((project) => (
-          <article class="entry">
-            <h3 class="entry-title">
-              <a href={projectUrl(project.id)}>{project.data.title}</a>
+      {featuredProject && (
+        <article class="featured">
+          <div class="featured-copy">
+            <p class="featured-kicker">{t.work.featured}</p>
+            <h3 class="featured-title">
+              <a href={projectUrl(featuredProject.id)}>{projectTitle(featuredProject)}</a>
             </h3>
-            <p class="entry-meta">{formatProjectDate(project)}</p>
-            {project.data.summary && <p class="entry-excerpt">{project.data.summary}</p>}
+            <p class="entry-meta">{formatProjectDate(featuredProject)}</p>
+            {projectSummary(featuredProject) && (
+              <p class="featured-summary">{projectSummary(featuredProject)}</p>
+            )}
+            {projectAward(featuredProject) && (
+              <p class="featured-award">{projectAward(featuredProject)}</p>
+            )}
             <div class="entry-links">
-              <a href={projectUrl(project.id)}>{t.work.details}</a>
-              {project.data.repo && (
-                <a href={project.data.repo} target="_blank" rel="noopener">Repo</a>
+              <a href={projectUrl(featuredProject.id)}>{t.work.details}</a>
+              {featuredProject.data.repo && (
+                <a href={featuredProject.data.repo} target="_blank" rel="noopener">Repo</a>
               )}
-              {project.data.demo && (
-                <a href={project.data.demo} target="_blank" rel="noopener">Demo</a>
+              {featuredProject.data.demo && (
+                <a href={featuredProject.data.demo} target="_blank" rel="noopener">Demo</a>
               )}
             </div>
-          </article>
-        ))}
-      </div>
+          </div>
+          {featuredProject.data.image && (
+            <a class="featured-image" href={projectUrl(featuredProject.id)}>
+              <img src={featuredProject.data.image} alt={projectTitle(featuredProject)} />
+            </a>
+          )}
+        </article>
+      )}
+      {otherProjects.length > 0 && (
+        <div class="entry-list">
+          {otherProjects.map((project) => (
+            <article class="entry">
+              <h3 class="entry-title">
+                <a href={projectUrl(project.id)}>{projectTitle(project)}</a>
+              </h3>
+              <p class="entry-meta">{formatProjectDate(project)}</p>
+              {projectSummary(project) && <p class="entry-excerpt">{projectSummary(project)}</p>}
+              <div class="entry-links">
+                <a href={projectUrl(project.id)}>{t.work.details}</a>
+                {project.data.repo && (
+                  <a href={project.data.repo} target="_blank" rel="noopener">Repo</a>
+                )}
+                {project.data.demo && (
+                  <a href={project.data.demo} target="_blank" rel="noopener">Demo</a>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
       <p class="see-all">
         <a href={projectListUrl}>{t.work.seeAll}</a>
       </p>
@@ -236,54 +267,34 @@ const postUrl = (id: string) => getRelativeLocaleUrl(locale, `/post/${id.replace
 </section>
 
 <style>
-  .about-grid {
+  .hero {
+    padding-top: 4.5rem;
+  }
+
+  .hero-grid {
     display: grid;
-    grid-template-columns: 160px 1fr;
+    grid-template-columns: 1fr 168px;
     gap: 3rem;
     align-items: start;
   }
 
-  .profile-card {
-    text-align: left;
-  }
-
-  .avatar-wrapper {
-    margin-bottom: 1.25rem;
-  }
-
-  .avatar {
-    width: 132px;
-    height: 132px;
-    border-radius: 2px;
-    object-fit: cover;
-  }
-
-  .profile-name {
-    font-size: 1.5rem;
-    margin-bottom: 0.35rem;
-  }
-
-  .profile-title {
-    font-size: 0.95rem;
+  .hero-kicker {
+    margin: 0 0 0.55rem;
     color: var(--text-secondary);
-    font-weight: 400;
-    margin: 0 0 0.35rem;
+    font-size: 0.95rem;
   }
 
-  .profile-institution {
-    font-size: 0.95rem;
+  .hero-name {
+    font-size: 2.7rem;
+    line-height: 1.2;
     margin: 0 0 1.25rem;
   }
 
-  .social-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.65rem 1rem;
-  }
-
-  .social-links a {
-    color: var(--text-secondary);
-    font-size: 0.88rem;
+  .avatar {
+    width: 168px;
+    height: 210px;
+    border-radius: 2px;
+    object-fit: cover;
   }
 
   .bio-text {
@@ -292,36 +303,83 @@ const postUrl = (id: string) => getRelativeLocaleUrl(locale, `/post/${id.replace
     margin: 0 0 1rem;
   }
 
-  .info-title {
-    font-family: var(--font-body);
-    font-size: 0.8rem;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    margin: 1.75rem 0 0.7rem;
-    color: var(--text-secondary);
-  }
-
   .interests-list {
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: 0.15rem 0 1.2rem;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.45rem 1rem;
+    gap: 0.35rem 1rem;
   }
 
   .interests-list li {
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     color: var(--text-secondary);
+  }
+
+  .social-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem 1.15rem;
+  }
+
+  .social-links a {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+
+  .featured {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 2rem;
+    align-items: start;
+    padding-bottom: 1.75rem;
+    margin-bottom: 0.25rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .featured-kicker {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    color: var(--accent-color);
+    margin: 0 0 0.55rem;
+  }
+
+  .featured-title {
+    font-size: 1.4rem;
+    line-height: 1.4;
+    margin: 0 0 0.45rem;
+  }
+
+  .featured-summary {
+    margin: 0 0 0.75rem;
+    line-height: 1.75;
+  }
+
+  .featured-award {
+    margin: 0 0 1rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
+
+  .featured-image:hover {
+    text-decoration: none;
+  }
+
+  .featured-image img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    object-position: top left;
+    border-radius: 2px;
+    border: 1px solid var(--border-color);
   }
 
   .entry {
     padding: 1.2rem 0;
     border-bottom: 1px solid var(--border-color);
-  }
-
-  .entry:first-child {
-    padding-top: 0;
   }
 
   .entry-title {
@@ -455,9 +513,31 @@ const postUrl = (id: string) => getRelativeLocaleUrl(locale, `/post/${id.replace
   }
 
   @media (max-width: 768px) {
-    .about-grid {
+    .hero {
+      padding-top: 2.75rem;
+    }
+
+    .hero-grid,
+    .featured {
       grid-template-columns: 1fr;
-      gap: 2rem;
+      gap: 1.5rem;
+    }
+
+    .hero-name {
+      font-size: 2.1rem;
+    }
+
+    .hero-photo {
+      order: -1;
+    }
+
+    .avatar {
+      width: 112px;
+      height: 140px;
+    }
+
+    .featured-image img {
+      height: 180px;
     }
   }
 </style>

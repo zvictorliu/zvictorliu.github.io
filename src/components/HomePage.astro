@@ -1,0 +1,372 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import type { CollectionEntry } from 'astro:content';
+import { useTranslations, type Locale } from '../i18n';
+import type { HomeProfile, ResumeItem } from '../data/home';
+import Timeline from './Timeline.astro';
+
+interface Props {
+  locale: Locale;
+  profile: HomeProfile;
+  education: ResumeItem[];
+  experience: ResumeItem[];
+  recentPosts: CollectionEntry<'post'>[];
+  recentProjects: CollectionEntry<'projects'>[];
+  recentPublications: CollectionEntry<'publication'>[];
+}
+
+const {
+  locale,
+  profile,
+  education,
+  experience,
+  recentPosts,
+  recentProjects,
+  recentPublications,
+} = Astro.props;
+
+const t = useTranslations(locale);
+const dateLocale = locale === 'zh' ? 'zh-CN' : 'en-US';
+const presentLabel = locale === 'zh' ? '至今' : 'Present';
+const dateTbd = locale === 'zh' ? '日期待定' : 'Date TBD';
+
+const formatProjectDate = (project: CollectionEntry<'projects'>) => {
+  const start = project.data.startDate ?? project.data.date;
+  const end = project.data.endDate ?? project.data.date;
+  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short' };
+  if (start && project.data.ongoing) {
+    return `${start.toLocaleDateString(dateLocale, options)} – ${presentLabel}`;
+  }
+  if (start && end) {
+    return `${start.toLocaleDateString(dateLocale, options)} – ${end.toLocaleDateString(dateLocale, options)}`;
+  }
+  if (start) return start.toLocaleDateString(dateLocale, options);
+  if (end) return end.toLocaleDateString(dateLocale, options);
+  return dateTbd;
+};
+
+const projectListUrl = getRelativeLocaleUrl(locale, '/project');
+const publicationListUrl = getRelativeLocaleUrl(locale, '/publication');
+const postListUrl = getRelativeLocaleUrl(locale, '/post');
+const projectUrl = (id: string) => getRelativeLocaleUrl(locale, `/project/${id.replace(/\.md$/, '')}`);
+const publicationUrl = (id: string) => getRelativeLocaleUrl(locale, `/publication/${id.replace(/\.md$/, '')}`);
+const postUrl = (id: string) => getRelativeLocaleUrl(locale, `/post/${id.replace(/\.md$/, '')}`);
+
+const featuredProject = recentProjects.find((project) => project.data.featured);
+const otherProjects = recentProjects.filter((project) => project.id !== featuredProject?.id);
+
+type MixedEntry =
+  | { kind: 'project'; sortDate: number; project: CollectionEntry<'projects'> }
+  | { kind: 'publication'; sortDate: number; pub: CollectionEntry<'publication'> };
+
+const mixedEntries: MixedEntry[] = [
+  ...otherProjects.map((project) => ({
+    kind: 'project' as const,
+    sortDate: (project.data.endDate ?? project.data.startDate ?? project.data.date)?.valueOf() ?? 0,
+    project,
+  })),
+  ...recentPublications.map((pub) => ({
+    kind: 'publication' as const,
+    sortDate: pub.data.date.valueOf(),
+    pub,
+  })),
+].sort((a, b) => b.sortDate - a.sortDate);
+
+const hasWork = Boolean(featuredProject) || mixedEntries.length > 0;
+
+const projectTitle = (project: CollectionEntry<'projects'>) =>
+  locale === 'en' && project.data.titleEn ? project.data.titleEn : project.data.title;
+
+const projectSummary = (project: CollectionEntry<'projects'>) =>
+  locale === 'en' && project.data.summaryEn ? project.data.summaryEn : project.data.summary;
+
+const projectAward = (project: CollectionEntry<'projects'>) =>
+  locale === 'en' && project.data.awardEn ? project.data.awardEn : project.data.award;
+---
+
+<section id="about" class="section hero">
+  <div class="container hero-grid">
+    <div class="hero-photo">
+      <img src={profile.avatar} alt={profile.name} class="avatar" />
+    </div>
+    <div class="hero-copy">
+      <h1 class="hero-name">{profile.name}</h1>
+      <p class="hero-kicker">
+        <a href={profile.institutionUrl} target="_blank" rel="noopener">{profile.institution}</a>
+        <span class="meta-sep">·</span>
+        {profile.role}
+      </p>
+      {profile.bio.split('\n').filter(Boolean).map((paragraph) => (
+        <p class="bio-text">{paragraph.trim()}</p>
+      ))}
+      <div class="social-links">
+        {profile.social.map((item) => (
+          <a href={item.href} target={item.href.startsWith('mailto:') ? undefined : '_blank'} rel="noopener">
+            {item.label}
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="education" class="section">
+  <div class="container">
+    <h2 class="section-title">{t.education.title}</h2>
+    <Timeline items={education} />
+  </div>
+</section>
+
+<section id="experience" class="section">
+  <div class="container">
+    <h2 class="section-title">{t.experience.title}</h2>
+    <Timeline items={experience} />
+  </div>
+</section>
+
+{hasWork && (
+  <section id="work" class="section">
+    <div class="container">
+      <h2 class="section-title">{t.work.homeTitle}</h2>
+      {featuredProject && (
+        <article class="featured">
+          <div class="featured-copy">
+            <p class="featured-kicker">{t.work.featured}</p>
+            <h3 class="featured-title">
+              <a href={projectUrl(featuredProject.id)}>{projectTitle(featuredProject)}</a>
+            </h3>
+            <p class="entry-meta">{formatProjectDate(featuredProject)}</p>
+            {projectSummary(featuredProject) && (
+              <p class="featured-summary">{projectSummary(featuredProject)}</p>
+            )}
+            {projectAward(featuredProject) && (
+              <p class="featured-award">{projectAward(featuredProject)}</p>
+            )}
+            <div class="entry-links">
+              <a href={projectUrl(featuredProject.id)}>{t.work.details}</a>
+              {featuredProject.data.repo && (
+                <a href={featuredProject.data.repo} target="_blank" rel="noopener">Repo</a>
+              )}
+              {featuredProject.data.demo && (
+                <a href={featuredProject.data.demo} target="_blank" rel="noopener">Demo</a>
+              )}
+            </div>
+          </div>
+          {featuredProject.data.image && (
+            <a class="featured-image" href={projectUrl(featuredProject.id)}>
+              <img src={featuredProject.data.image} alt={projectTitle(featuredProject)} />
+            </a>
+          )}
+        </article>
+      )}
+      {mixedEntries.length > 0 && (
+        <div class="entry-list">
+          {mixedEntries.map((item) => (
+            item.kind === 'project' ? (
+              <article class="entry">
+                <p class="entry-kicker">{t.work.kindProject}</p>
+                <h3 class="entry-title">
+                  <a href={projectUrl(item.project.id)}>{projectTitle(item.project)}</a>
+                </h3>
+                <p class="entry-meta">{formatProjectDate(item.project)}</p>
+                {projectSummary(item.project) && (
+                  <p class="featured-summary">{projectSummary(item.project)}</p>
+                )}
+                <div class="entry-links">
+                  <a href={projectUrl(item.project.id)}>{t.work.details}</a>
+                  {item.project.data.repo && (
+                    <a href={item.project.data.repo} target="_blank" rel="noopener">Repo</a>
+                  )}
+                  {item.project.data.demo && (
+                    <a href={item.project.data.demo} target="_blank" rel="noopener">Demo</a>
+                  )}
+                </div>
+              </article>
+            ) : (
+              <article class="entry">
+                <p class="entry-kicker">{t.work.kindPublication}</p>
+                <h3 class="entry-title">
+                  <a href={publicationUrl(item.pub.id)}>{item.pub.data.title}</a>
+                </h3>
+                <p class="entry-meta">
+                  <em>{item.pub.data.journal}</em>
+                  <span class="meta-sep">·</span>
+                  {item.pub.data.date.getFullYear()}
+                </p>
+              </article>
+            )
+          ))}
+        </div>
+      )}
+      <p class="see-all">
+        {recentProjects.length > 0 && (
+          <a href={projectListUrl}>{t.work.seeAll}</a>
+        )}
+        {recentProjects.length > 0 && recentPublications.length > 0 && (
+          <span class="meta-sep">·</span>
+        )}
+        {recentPublications.length > 0 && (
+          <a href={publicationListUrl}>{t.publications.seeAll}</a>
+        )}
+      </p>
+    </div>
+  </section>
+)}
+
+{recentPosts.length > 0 && (
+  <section id="posts" class="section">
+    <div class="container">
+      <h2 class="section-title">{t.posts.title}</h2>
+      <div class="entry-list">
+        {recentPosts.map((post) => (
+          <article class="entry">
+            <h3 class="entry-title">
+              <a href={postUrl(post.id)}>{post.data.title}</a>
+            </h3>
+            <p class="entry-meta">
+              {post.data.date.toLocaleDateString(dateLocale, { year: 'numeric', month: 'short', day: 'numeric' })}
+            </p>
+            {post.data.description && <p class="entry-excerpt">{post.data.description}</p>}
+          </article>
+        ))}
+      </div>
+      <p class="see-all">
+        <a href={postListUrl}>{t.posts.seeAll}</a>
+      </p>
+    </div>
+  </section>
+)}
+
+<style>
+  .hero {
+    padding-top: 4.5rem;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .hero-kicker {
+    margin: 0 0 1.15rem;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+  }
+
+  .hero-name {
+    font-size: 2.75rem;
+    line-height: 1.15;
+    margin: 0 0 0.45rem;
+  }
+
+  .avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 2px;
+    object-fit: cover;
+  }
+
+  .bio-text {
+    font-size: 1.05rem;
+    line-height: 1.85;
+    margin: 0 0 1rem;
+  }
+
+  .social-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem 1.15rem;
+    margin-top: 1.35rem;
+  }
+
+  .social-links a {
+    color: var(--text-color);
+    font-size: 0.9rem;
+  }
+
+  .featured {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 2rem;
+    align-items: start;
+    padding-bottom: 1.75rem;
+    margin-bottom: 0.25rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .featured-kicker,
+  .entry-kicker {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    margin: 0 0 0.45rem;
+  }
+
+  .featured-kicker {
+    color: var(--accent-color);
+  }
+
+  .entry-kicker {
+    color: var(--text-secondary);
+  }
+
+  .featured-title {
+    font-size: 1.4rem;
+    line-height: 1.4;
+    margin: 0 0 0.45rem;
+  }
+
+  .featured-summary {
+    margin: 0 0 0.75rem;
+    line-height: 1.75;
+  }
+
+  .featured-award {
+    margin: 0 0 1rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
+
+  .featured-image:hover {
+    text-decoration: none;
+  }
+
+  .featured-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 2px;
+    border: 1px solid var(--border-color);
+  }
+
+  .see-all {
+    margin: 1.25rem 0 0;
+  }
+
+  .see-all a {
+    color: var(--text-secondary);
+  }
+
+  @media (max-width: 768px) {
+    .hero {
+      padding-top: 2.75rem;
+    }
+
+    .hero-grid,
+    .featured {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .hero-name {
+      font-size: 2.2rem;
+    }
+
+    .avatar {
+      width: 96px;
+      height: 96px;
+    }
+  }
+</style>

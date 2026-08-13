@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { getCollection, render } from 'astro:content';
+import type { Locale } from '../../i18n';
 
 export async function getStaticPaths() {
   const publications = await getCollection('publication');
@@ -10,79 +11,33 @@ export async function getStaticPaths() {
   }));
 }
 
+const locale = (Astro.currentLocale || 'zh') as Locale;
 const { publication } = Astro.props;
 const { Content } = await render(publication);
 ---
 
-<Layout title={`${publication.data.title} - Zongwei Liu`}>
-  <article class="publication-page">
-    <header class="publication-header">
-      <h1 class="publication-title">{publication.data.title}</h1>
-      <p class="publication-authors">
+<Layout title={`${publication.data.title} - Zongwei Liu`} locale={locale}>
+  <article class="article-page">
+    <header class="article-header">
+      <h1>{publication.data.title}</h1>
+      <p class="entry-meta">
         {publication.data.authors.map((author, i) => (
           <span class={author === publication.data.highlightedAuthor ? 'highlighted' : ''}>
             {author}{i < publication.data.authors.length - 1 ? ', ' : ''}
           </span>
         ))}
       </p>
-      <p class="publication-meta">
+      <p class="entry-excerpt">
         <em>{publication.data.journal}</em> ({publication.data.date.getFullYear()})
       </p>
-      <p class="publication-links">
+      <div class="entry-links">
         <a href={publication.data.doi} target="_blank" rel="noopener">DOI</a>
-      </p>
+      </div>
     </header>
-
-    <section class="publication-content">
-      <h2>Abstract</h2>
+    <section class="article-content">
+      <h2>{locale === 'zh' ? '摘要' : 'Abstract'}</h2>
       <Content />
     </section>
   </article>
 </Layout>
 
-<style>
-  .publication-page {
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 3rem 1.5rem 5rem;
-  }
-
-  .publication-header {
-    margin-bottom: 1.8rem;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 1.2rem;
-  }
-
-  .publication-title {
-    font-size: 2rem;
-    line-height: 1.35;
-    margin-bottom: 0.8rem;
-  }
-
-  .publication-authors {
-    color: var(--text-secondary);
-    margin-bottom: 0.5rem;
-  }
-
-  .highlighted {
-    font-weight: 700;
-    color: var(--text-color);
-  }
-
-  .publication-meta {
-    color: var(--text-secondary);
-    margin-bottom: 0.5rem;
-  }
-
-  .publication-links a {
-    color: var(--accent-color);
-  }
-
-  .publication-content {
-    line-height: 1.8;
-  }
-
-  .publication-content :global(p) {
-    color: var(--text-color);
-  }
-</style>

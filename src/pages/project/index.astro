@@ -1,202 +1,78 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import { useTranslations, type Locale } from '../../i18n';
+
+const locale = (Astro.currentLocale || 'zh') as Locale;
+const t = useTranslations(locale);
+const dateLocale = locale === 'zh' ? 'zh-CN' : 'en-US';
+const presentLabel = locale === 'zh' ? '至今' : 'Present';
 
 const projects = (await getCollection('projects', ({ data }) => !data.draft))
   .sort((a, b) => (b.data.endDate?.valueOf() ?? 0) - (a.data.endDate?.valueOf() ?? 0));
 
-const formatDateRange = (project: (typeof projects)[number], locale: 'en-US') => {
+const formatDateRange = (project: (typeof projects)[number]) => {
   const start = project.data.startDate ?? project.data.date;
   const end = project.data.endDate ?? project.data.date;
-  const presentLabel = 'Present';
+  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short' };
   if (start && project.data.ongoing) {
-    return `${start.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' })} - ${presentLabel}`;
+    return `${start.toLocaleDateString(dateLocale, options)} – ${presentLabel}`;
   }
   if (start && end) {
-    return `${start.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' })} - ${end.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' })}`;
+    return `${start.toLocaleDateString(dateLocale, options)} – ${end.toLocaleDateString(dateLocale, options)}`;
   }
-  if (start) {
-    return start.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' });
-  }
-  if (end) {
-    return end.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' });
-  }
-  return 'Date TBD';
+  if (start) return start.toLocaleDateString(dateLocale, options);
+  if (end) return end.toLocaleDateString(dateLocale, options);
+  return locale === 'zh' ? '日期待定' : 'Date TBD';
 };
+
+const titleOf = (project: (typeof projects)[number]) =>
+  locale === 'en' && project.data.titleEn ? project.data.titleEn : project.data.title;
+
+const summaryOf = (project: (typeof projects)[number]) =>
+  locale === 'en' && project.data.summaryEn ? project.data.summaryEn : project.data.summary;
 ---
 
-<Layout title="Projects - Zongwei Liu">
-  <section class="projects-page">
+<Layout title={`${t.work.title} - ${t.brand}`} locale={locale}>
+  <section class="page-block">
     <div class="container">
       <header class="page-header">
-        <h1>Projects</h1>
-        <p class="page-subtitle">Selected projects and engineering practice</p>
+        <h1>{t.work.title}</h1>
+        <p class="page-subtitle">{locale === 'zh' ? '选过的工程与实验' : 'Selected projects and experiments'}</p>
       </header>
 
-      <div class="projects-list">
-        {projects.map((project) => (
-          <article class="project-card">
-            <div class="project-meta">
-              <span class="project-date">
-                <i class="fas fa-calendar"></i>
-                {formatDateRange(project, 'en-US')}
-              </span>
-              {project.data.tags && project.data.tags.length > 0 && (
-                <div class="project-tags">
-                  {project.data.tags.map((tag: string) => (
-                    <span class="tag">{tag}</span>
-                  ))}
-                </div>
-              )}
+      {projects.map((project) => (
+        <article class="entry">
+          <p class="entry-meta">{formatDateRange(project)}</p>
+          {project.data.tags && project.data.tags.length > 0 && (
+            <div class="tag-row">
+              {project.data.tags.map((tag: string) => (
+                <span class="tag">{tag}</span>
+              ))}
             </div>
-            <h2 class="project-title">
-              <a href={`/project/${project.id.replace(/\.md$/, '')}/`}>{project.data.title}</a>
-            </h2>
-            {project.data.summary && <p class="project-summary">{project.data.summary}</p>}
-            <div class="project-links">
-              <a href={`/project/${project.id.replace(/\.md$/, '')}/`} class="btn btn-sm">Details</a>
-              {project.data.repo && (
-                <a href={project.data.repo} target="_blank" rel="noopener" class="btn btn-sm">Repo</a>
-              )}
-              {project.data.demo && (
-                <a href={project.data.demo} target="_blank" rel="noopener" class="btn btn-sm">Demo</a>
-              )}
-            </div>
-          </article>
-        ))}
-      </div>
+          )}
+          <h2 class="entry-title">
+            <a href={getRelativeLocaleUrl(locale, `/project/${project.id.replace(/\.md$/, '')}`)}>
+              {titleOf(project)}
+            </a>
+          </h2>
+          {summaryOf(project) && <p class="entry-excerpt">{summaryOf(project)}</p>}
+          <div class="entry-links">
+            <a href={getRelativeLocaleUrl(locale, `/project/${project.id.replace(/\.md$/, '')}`)}>{t.work.details}</a>
+            {project.data.repo && (
+              <a href={project.data.repo} target="_blank" rel="noopener">Repo</a>
+            )}
+            {project.data.demo && (
+              <a href={project.data.demo} target="_blank" rel="noopener">Demo</a>
+            )}
+          </div>
+        </article>
+      ))}
 
       {projects.length === 0 && (
-        <div class="empty-state">
-          <i class="fas fa-inbox"></i>
-          <p>No projects yet. Stay tuned!</p>
-        </div>
+        <p class="empty-state">{locale === 'zh' ? '还没有项目。' : 'No projects yet.'}</p>
       )}
     </div>
   </section>
 </Layout>
-
-<style>
-  .projects-page {
-    padding: 3rem 0 5rem;
-  }
-
-  .page-header {
-    text-align: center;
-    margin-bottom: 3rem;
-  }
-
-  .page-header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .page-subtitle {
-    color: var(--text-secondary);
-    font-size: 1.1rem;
-  }
-
-  .projects-list {
-    display: grid;
-    gap: 1rem;
-    max-width: 900px;
-    margin: 0 auto;
-  }
-
-  .project-card {
-    background: var(--card-bg);
-    border-radius: 8px;
-    padding: 1.25rem;
-  }
-
-  .project-meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-    margin-bottom: 0.6rem;
-  }
-
-  .project-date {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  .project-date i {
-    color: var(--accent-color);
-  }
-
-  .project-tags {
-    display: flex;
-    gap: 0.4rem;
-    flex-wrap: wrap;
-  }
-
-  .tag {
-    padding: 0.2rem 0.6rem;
-    background: var(--bg-color);
-    color: var(--text-secondary);
-    border-radius: 16px;
-    font-size: 0.8rem;
-    border: 1px solid var(--border-color);
-  }
-
-  .project-title {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-    line-height: 1.4;
-  }
-
-  .project-title a {
-    color: var(--text-color);
-  }
-
-  .project-title a:hover {
-    color: var(--accent-color);
-  }
-
-  .project-summary {
-    color: var(--text-secondary);
-    margin-bottom: 0.8rem;
-  }
-
-  .project-links {
-    display: flex;
-    gap: 0.6rem;
-    flex-wrap: wrap;
-  }
-
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.25rem 0.75rem;
-    border-radius: 999px;
-    border: 1px solid var(--border-color);
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-    transition: all 0.2s ease;
-  }
-
-  .btn:hover {
-    background-color: var(--accent-color);
-    border-color: var(--accent-color);
-    color: #fff;
-  }
-
-  .empty-state {
-    text-align: center;
-    padding: 4rem 2rem;
-    color: var(--text-secondary);
-  }
-
-  .empty-state i {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    opacity: 0.5;
-  }
-</style>

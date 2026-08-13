@@ -1,45 +1,30 @@
-// 定义翻译键类型
 export type Locale = 'en' | 'zh';
 
 export type TranslationKeys = {
   nav: {
-    home: string;
+    work: string;
+    path: string;
     about: string;
-    skills: string;
-    education: string;
-    experience: string;
-    posts: string;
-    projects: string;
-    publications: string;
-    contact: string;
   };
+  brand: string;
   profile: {
     title: string;
   };
   about: {
     biography: string;
     interests: string;
-    education: string;
   };
-  skills: {
-    title: string;
-    techStack: string;
-    programmingLanguages: string;
-  };
-  education: {
-    title: string;
-  };
-  experience: {
+  path: {
     title: string;
   };
   posts: {
     title: string;
-    minRead: string;
     seeAll: string;
   };
-  projects: {
+  work: {
     title: string;
     seeAll: string;
+    details: string;
   };
   publications: {
     title: string;
@@ -47,146 +32,93 @@ export type TranslationKeys = {
   };
   contact: {
     title: string;
-    getInTouch: string;
     message: string;
-    form: {
-      name: string;
-      email: string;
-      message: string;
-      send: string;
-    };
   };
 };
 
-// 定义语言包类型
 type Translations = Record<Locale, TranslationKeys>;
 
-// 英文翻译
 const enTranslations: TranslationKeys = {
   nav: {
-    home: 'Home',
+    work: 'Work',
+    path: 'Path',
     about: 'About',
-    skills: 'Skills',
-    education: 'Education',
-    experience: 'Experience',
-    posts: 'Posts',
-    projects: 'Projects',
-    publications: 'Publications',
-    contact: 'Contact'
   },
+  brand: 'Zongwei Liu',
   profile: {
-    title: 'Graduate Student'
+    title: 'Graduate Student',
   },
   about: {
     biography: 'Biography',
     interests: 'Interests',
-    education: 'Education'
   },
-  skills: {
-    title: 'Skills',
-    techStack: 'Tech Stack',
-    programmingLanguages: 'Programming Languages'
-  },
-  education: {
-    title: 'Education'
-  },
-  experience: {
-    title: 'Experience'
+  path: {
+    title: 'Path',
   },
   posts: {
-    title: 'Recent Posts',
-    minRead: 'min read',
-    seeAll: 'See all posts'
+    title: 'Writing',
+    seeAll: 'See all posts',
   },
-  projects: {
-    title: 'Projects',
-    seeAll: 'See all projects'
+  work: {
+    title: 'Work',
+    seeAll: 'See all projects',
+    details: 'Details',
   },
   publications: {
     title: 'Publications',
-    seeAll: 'See all publications'
+    seeAll: 'See all publications',
   },
   contact: {
     title: 'Contact',
-    getInTouch: 'Get in Touch',
-    message: 'Feel free to reach out if you want to collaborate with me, or simply have a chat.',
-    form: {
-      name: 'Name',
-      email: 'Email',
-      message: 'Message',
-      send: 'Send Message'
-    }
-  }
+    message: 'Feel free to write. I read everything.',
+  },
 };
 
-// 中文翻译
 const zhTranslations: TranslationKeys = {
   nav: {
-    home: '首页',
+    work: '作品',
+    path: '路径',
     about: '关于',
-    skills: '技能',
-    education: '教育',
-    experience: '经历',
-    posts: '博客',
-    projects: '项目',
-    publications: '发表',
-    contact: '联系'
   },
+  brand: '刘宗炜',
   profile: {
-    title: '研二找实习ing'
+    title: '研二找实习ing',
   },
   about: {
     biography: '个人简介',
     interests: '兴趣点',
-    education: '教育背景'
   },
-  skills: {
-    title: '技能',
-    techStack: '技术栈',
-    programmingLanguages: '编程语言'
-  },
-  education: {
-    title: '教育经历'
-  },
-  experience: {
-    title: '工作经历'
+  path: {
+    title: '路径',
   },
   posts: {
-    title: '最新博客',
-    minRead: '分钟阅读',
-    seeAll: '查看所有博客'
+    title: '写作',
+    seeAll: '查看所有文章',
   },
-  projects: {
-    title: '项目',
-    seeAll: '查看所有项目'
+  work: {
+    title: '作品',
+    seeAll: '查看所有项目',
+    details: '详情',
   },
   publications: {
-    title: '发表情况',
-    seeAll: '查看所有发表'
+    title: '发表',
+    seeAll: '查看所有发表',
   },
   contact: {
     title: '联系',
-    getInTouch: '联系我',
-    message: '如果您想与我合作或只是想聊聊，请随时联系我。',
-    form: {
-      name: '姓名',
-      email: '邮箱',
-      message: '消息',
-      send: '发送消息'
-    }
-  }
+    message: '有事请写信，我会读。',
+  },
 };
 
-// 语言包
 const translations: Translations = {
   en: enTranslations,
-  zh: zhTranslations
+  zh: zhTranslations,
 };
 
 export const getLangFromUrl = (url: URL): Locale => {
   const [, lang] = url.pathname.split('/');
   if (lang in translations) return lang as Locale;
-  return 'zh'; // 默认返回中文
+  return 'zh';
 };
 
 export const useTranslations = (lang: Locale): TranslationKeys => {

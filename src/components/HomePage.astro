@@ -1,0 +1,486 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import type { CollectionEntry } from 'astro:content';
+import { useTranslations, type Locale } from '../i18n';
+import type { HomeProfile, PathItem } from '../data/home';
+
+interface Props {
+  locale: Locale;
+  profile: HomeProfile;
+  path: PathItem[];
+  recentPosts: CollectionEntry<'post'>[];
+  recentProjects: CollectionEntry<'projects'>[];
+  recentPublications: CollectionEntry<'publication'>[];
+  contactEmail: string;
+}
+
+const {
+  locale,
+  profile,
+  path,
+  recentPosts,
+  recentProjects,
+  recentPublications,
+  contactEmail,
+} = Astro.props;
+
+const t = useTranslations(locale);
+const dateLocale = locale === 'zh' ? 'zh-CN' : 'en-US';
+const presentLabel = locale === 'zh' ? '至今' : 'Present';
+const dateTbd = locale === 'zh' ? '日期待定' : 'Date TBD';
+
+const formatProjectDate = (project: CollectionEntry<'projects'>) => {
+  const start = project.data.startDate ?? project.data.date;
+  const end = project.data.endDate ?? project.data.date;
+  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short' };
+  if (start && project.data.ongoing) {
+    return `${start.toLocaleDateString(dateLocale, options)} – ${presentLabel}`;
+  }
+  if (start && end) {
+    return `${start.toLocaleDateString(dateLocale, options)} – ${end.toLocaleDateString(dateLocale, options)}`;
+  }
+  if (start) return start.toLocaleDateString(dateLocale, options);
+  if (end) return end.toLocaleDateString(dateLocale, options);
+  return dateTbd;
+};
+
+const projectListUrl = getRelativeLocaleUrl(locale, '/project');
+const publicationListUrl = getRelativeLocaleUrl(locale, '/publication');
+const postListUrl = getRelativeLocaleUrl(locale, '/post');
+const projectUrl = (id: string) => getRelativeLocaleUrl(locale, `/project/${id.replace(/\.md$/, '')}`);
+const publicationUrl = (id: string) => getRelativeLocaleUrl(locale, `/publication/${id.replace(/\.md$/, '')}`);
+const postUrl = (id: string) => getRelativeLocaleUrl(locale, `/post/${id.replace(/\.md$/, '')}`);
+---
+
+<section id="about" class="section about-section">
+  <div class="container">
+    <div class="about-grid">
+      <div class="profile-card">
+        <div class="avatar-wrapper">
+          <img
+            src={profile.avatar}
+            alt={profile.name}
+            class="avatar"
+            onerror="this.src='https://www.gravatar.com/avatar/?d=mp&s=270'"
+          />
+        </div>
+        <h1 class="profile-name">{profile.name}</h1>
+        <p class="profile-title">{profile.title}</p>
+        <p class="profile-institution">
+          <a href={profile.institutionUrl} target="_blank" rel="noopener">
+            {profile.institution}
+          </a>
+        </p>
+        <div class="social-links">
+          {profile.social.map((item) => (
+            <a href={item.href} target={item.href.startsWith('mailto:') ? undefined : '_blank'} rel="noopener">
+              {item.label}
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <div class="bio-content">
+        <h2 class="section-title">{t.about.biography}</h2>
+        {profile.bio.split('\n').filter(Boolean).map((paragraph) => (
+          <p class="bio-text">{paragraph.trim()}</p>
+        ))}
+
+        <div class="info-section">
+          <h3 class="info-title">{t.about.interests}</h3>
+          <ul class="interests-list">
+            {profile.interests.map((interest) => (
+              <li>{interest}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{recentProjects.length > 0 && (
+  <section id="work" class="section">
+    <div class="container">
+      <h2 class="section-title">{t.work.title}</h2>
+      <div class="entry-list">
+        {recentProjects.map((project) => (
+          <article class="entry">
+            <h3 class="entry-title">
+              <a href={projectUrl(project.id)}>{project.data.title}</a>
+            </h3>
+            <p class="entry-meta">{formatProjectDate(project)}</p>
+            {project.data.summary && <p class="entry-excerpt">{project.data.summary}</p>}
+            <div class="entry-links">
+              <a href={projectUrl(project.id)}>{t.work.details}</a>
+              {project.data.repo && (
+                <a href={project.data.repo} target="_blank" rel="noopener">Repo</a>
+              )}
+              {project.data.demo && (
+                <a href={project.data.demo} target="_blank" rel="noopener">Demo</a>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+      <p class="see-all">
+        <a href={projectListUrl}>{t.work.seeAll}</a>
+      </p>
+    </div>
+  </section>
+)}
+
+<section id="path" class="section">
+  <div class="container">
+    <h2 class="section-title">{t.path.title}</h2>
+    <div class="experience-timeline">
+      {path.map((item, index) => (
+        <div class="experience-item">
+          <div class="timeline-marker">
+            <span class:list={['marker-dot', item.current && 'current']}></span>
+            {index < path.length - 1 && <div class="timeline-line"></div>}
+          </div>
+          <div class="experience-card">
+            <div class="card-header">
+              <div class="company-logo">
+                <a href={item.orgUrl} target="_blank" rel="noopener">
+                  <img src={item.logo} alt={item.org} width="56" height="56" />
+                </a>
+              </div>
+              <div class="card-title-group">
+                <h3 class="card-title">{item.title}</h3>
+                <p class="card-company">
+                  <a href={item.orgUrl} target="_blank" rel="noopener">{item.org}</a>
+                </p>
+                <p class="card-meta">
+                  {item.dateLabel}
+                  <span class="meta-sep">·</span>
+                  {item.location}
+                </p>
+              </div>
+            </div>
+            {item.description && <p class="card-description">{item.description}</p>}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+{recentPublications.length > 0 && (
+  <section id="publications" class="section">
+    <div class="container">
+      <h2 class="section-title">{t.publications.title}</h2>
+      <div class="entry-list">
+        {recentPublications.map((pub) => (
+          <article class="entry">
+            <p class="pub-authors">
+              {pub.data.authors.map((author, i) => (
+                <span class={author === pub.data.highlightedAuthor ? 'highlighted' : ''}>
+                  {author}{i < pub.data.authors.length - 1 ? ', ' : ''}
+                </span>
+              ))}
+              ({pub.data.date.getFullYear()}).
+            </p>
+            <h3 class="entry-title">
+              <a href={publicationUrl(pub.id)}>{pub.data.title}</a>
+            </h3>
+            <p class="entry-excerpt">
+              <em>{pub.data.journal}</em>
+            </p>
+            <div class="entry-links">
+              <a href={pub.data.doi} target="_blank" rel="noopener">DOI</a>
+            </div>
+          </article>
+        ))}
+      </div>
+      <p class="see-all">
+        <a href={publicationListUrl}>{t.publications.seeAll}</a>
+      </p>
+    </div>
+  </section>
+)}
+
+{recentPosts.length > 0 && (
+  <section id="posts" class="section">
+    <div class="container">
+      <h2 class="section-title">{t.posts.title}</h2>
+      <div class="entry-list">
+        {recentPosts.map((post) => (
+          <article class="entry">
+            <h3 class="entry-title">
+              <a href={postUrl(post.id)}>{post.data.title}</a>
+            </h3>
+            <p class="entry-meta">
+              {post.data.date.toLocaleDateString(dateLocale, { year: 'numeric', month: 'short', day: 'numeric' })}
+            </p>
+            {post.data.description && <p class="entry-excerpt">{post.data.description}</p>}
+          </article>
+        ))}
+      </div>
+      <p class="see-all">
+        <a href={postListUrl}>{t.posts.seeAll}</a>
+      </p>
+    </div>
+  </section>
+)}
+
+<section id="contact" class="section">
+  <div class="container contact-block">
+    <h2 class="section-title">{t.contact.title}</h2>
+    <p class="contact-text">{t.contact.message}</p>
+    <p class="contact-email">
+      <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .profile-card {
+    text-align: center;
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 8px;
+  }
+
+  .avatar-wrapper {
+    margin-bottom: 1.5rem;
+  }
+
+  .avatar {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--border-color);
+  }
+
+  .profile-name {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .profile-title {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+    margin: 0 0 0.5rem;
+  }
+
+  .profile-institution {
+    font-size: 1rem;
+    margin: 0 0 1.5rem;
+  }
+
+  .social-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+  }
+
+  .social-links a {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+
+  .social-links a:hover {
+    color: var(--accent-color);
+  }
+
+  .bio-content .section-title {
+    text-align: left;
+    margin-bottom: 1.5rem;
+  }
+
+  .bio-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin: 0 0 1rem;
+    text-align: justify;
+  }
+
+  .info-title {
+    font-size: 1rem;
+    margin: 1.5rem 0 0.75rem;
+    color: var(--text-secondary);
+  }
+
+  .interests-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .interests-list li {
+    padding: 0.2rem 0.7rem;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
+
+  .entry-list,
+  .experience-timeline {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .entry {
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .entry-title {
+    margin: 0 0 0.4rem;
+    font-size: 1.15rem;
+  }
+
+  .entry-meta {
+    margin: 0 0 0.6rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
+
+  .entry-excerpt {
+    margin: 0 0 0.75rem;
+    color: var(--text-secondary);
+  }
+
+  .entry-links {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .pub-authors {
+    margin: 0 0 0.4rem;
+    font-size: 0.95rem;
+  }
+
+  .pub-authors .highlighted {
+    font-weight: 600;
+  }
+
+  .see-all {
+    text-align: center;
+    margin: 1.5rem 0 0;
+  }
+
+  .experience-item {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .timeline-marker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 0.5rem;
+  }
+
+  .marker-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--accent-color);
+    background: var(--bg-color);
+  }
+
+  .marker-dot.current {
+    background: var(--accent-color);
+  }
+
+  .timeline-line {
+    width: 1px;
+    flex: 1;
+    background: var(--border-color);
+    margin-top: 0.5rem;
+  }
+
+  .experience-card {
+    flex: 1;
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+  }
+
+  .card-header {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .company-logo img {
+    border-radius: 8px;
+  }
+
+  .card-title {
+    margin: 0 0 0.25rem;
+    font-size: 1.1rem;
+  }
+
+  .card-company {
+    margin: 0 0 0.25rem;
+    color: var(--text-secondary);
+  }
+
+  .card-meta {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
+
+  .meta-sep {
+    margin: 0 0.4rem;
+  }
+
+  .card-description {
+    margin: 0;
+    color: var(--text-secondary);
+  }
+
+  .contact-block {
+    max-width: 800px;
+    text-align: center;
+  }
+
+  .contact-text {
+    color: var(--text-secondary);
+    margin: 0 0 0.75rem;
+  }
+
+  .contact-email {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+
+  @media (max-width: 768px) {
+    .about-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .profile-card {
+      max-width: 350px;
+      margin: 0 auto;
+    }
+
+    .bio-content .section-title {
+      text-align: center;
+    }
+  }
+</style>

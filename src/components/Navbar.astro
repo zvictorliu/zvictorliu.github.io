@@ -12,34 +12,26 @@ const pathWithoutLocale = currentPath === localePath
     ? currentPath.slice(localePath.length)
     : currentPath;
 const targetLang: Locale = lang === 'zh' ? 'en' : 'zh';
-const toggleLabel = targetLang === 'en' ? 'English' : '中文';
+const toggleLabel = targetLang === 'en' ? 'EN' : '中文';
 const toggleUrl = getRelativeLocaleUrl(targetLang, pathWithoutLocale);
 
-type NavLabel = 'home' | 'about' | 'skills' | 'education' | 'experience' | 'posts' | 'projects' | 'publications' | 'contact';
 const homeUrl = getRelativeLocaleUrl(lang);
+const workUrl = getRelativeLocaleUrl(lang, '/project');
+const pathUrl = `${homeUrl}#path`;
 const aboutUrl = getRelativeLocaleUrl(lang, '/about');
-const postsUrl = getRelativeLocaleUrl(lang, '/post');
-const projectsUrl = getRelativeLocaleUrl(lang, '/project');
-const publicationsUrl = getRelativeLocaleUrl(lang, '/publication');
 
-const navItems: { label: NavLabel; url: string }[] = [
-  { label: 'home', url: homeUrl },
-  { label: 'about', url: aboutUrl },
-  { label: 'skills', url: `${homeUrl}#skills` },
-  { label: 'education', url: `${homeUrl}#education` },
-  { label: 'experience', url: `${homeUrl}#experience` },
-  { label: 'posts', url: postsUrl },
-  { label: 'projects', url: projectsUrl },
-  { label: 'publications', url: publicationsUrl },
-  { label: 'contact', url: `${homeUrl}#contact` },
+const navItems = [
+  { label: t.nav.work, url: workUrl },
+  { label: t.nav.path, url: pathUrl },
+  { label: t.nav.about, url: aboutUrl },
 ];
 ---
 
 <header class="site-header">
   <nav class="navbar">
     <div class="container">
-      <a class="navbar-brand" href={getRelativeLocaleUrl(lang)}>Zongwei Liu's Homepage</a>
-      
+      <a class="navbar-brand" href={homeUrl}>{t.brand}</a>
+
       <button class="navbar-toggler" type="button" aria-label="Toggle navigation">
         <span class="hamburger"></span>
       </button>
@@ -48,7 +40,7 @@ const navItems: { label: NavLabel; url: string }[] = [
         <ul class="navbar-nav">
           {navItems.map((item) => (
             <li class="nav-item">
-              <a class="nav-link" href={item.url}>{t.nav[item.label]}</a>
+              <a class="nav-link" href={item.url}>{item.label}</a>
             </li>
           ))}
         </ul>
@@ -67,7 +59,6 @@ const navItems: { label: NavLabel; url: string }[] = [
     z-index: 1000;
     background: var(--bg-color);
     border-bottom: 1px solid var(--border-color);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   }
 
   .navbar {
@@ -84,10 +75,11 @@ const navItems: { label: NavLabel; url: string }[] = [
   }
 
   .navbar-brand {
-    font-size: 1.25rem;
+    font-size: 1.05rem;
     font-weight: 600;
     color: var(--text-color);
     text-decoration: none;
+    letter-spacing: 0.02em;
   }
 
   .navbar-brand:hover {
@@ -104,12 +96,12 @@ const navItems: { label: NavLabel; url: string }[] = [
     list-style: none;
     margin: 0;
     padding: 0;
-    gap: 0.5rem;
+    gap: 0.25rem;
   }
 
   .nav-link {
     display: block;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 0.85rem;
     color: var(--text-secondary);
     text-decoration: none;
     font-size: 0.95rem;
@@ -130,20 +122,20 @@ const navItems: { label: NavLabel; url: string }[] = [
   }
 
   .lang-toggle {
-    margin-left: 1rem;
+    margin-left: 0.75rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 3.5rem;
-    padding: 0.4rem 0.75rem;
+    min-width: 2.75rem;
+    padding: 0.3rem 0.6rem;
     border: 1px solid var(--border-color);
     border-radius: 4px;
     background: transparent;
     color: var(--text-secondary);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     cursor: pointer;
     text-decoration: none;
-    transition: all 0.2s;
+    transition: color 0.2s, border-color 0.2s;
   }
 
   .lang-toggle:hover {
@@ -179,7 +171,7 @@ const navItems: { label: NavLabel; url: string }[] = [
     bottom: -8px;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     .navbar-toggler {
       display: block;
     }
@@ -209,8 +201,8 @@ const navItems: { label: NavLabel; url: string }[] = [
       border-bottom: 1px solid var(--border-color);
     }
 
-    .nav-link:last-child {
-      border-bottom: none;
+    .lang-toggle {
+      margin: 0.75rem 1rem 0;
     }
   }
 </style>
@@ -224,7 +216,7 @@ const navItems: { label: NavLabel; url: string }[] = [
   });
 
   const navLinks = document.querySelectorAll('.nav-link');
-  navLinks.forEach(link => {
+  navLinks.forEach((link) => {
     link.addEventListener('click', () => {
       menu?.classList.remove('open');
     });

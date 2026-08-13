@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js';
+import keyboardOverlayUrl from '../assets/room/keyboard-overlay.png?url';
+import macbookScreenUrl from '../assets/room/macbook-screen.png?url';
 
 const ROOM_W = 5.2;
 const ROOM_D = 4.2;
@@ -80,6 +82,145 @@ function addBox(
   return mesh;
 }
 
+function addMacBook(
+  parent: THREE.Object3D,
+  disposables: Disposable[],
+  x: number,
+  y: number,
+  z: number,
+) {
+  const screenW = 0.294;
+  const screenH = 0.2;
+  const loader = new THREE.TextureLoader();
+
+  const screenImageTexture = loader.load(macbookScreenUrl, (tex) => {
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.repeat.y = (tex.image.width / tex.image.height / screenW) * screenH;
+  });
+  screenImageTexture.colorSpace = THREE.SRGBColorSpace;
+  disposables.push(screenImageTexture);
+
+  const keyboardTexture = loader.load(keyboardOverlayUrl);
+  keyboardTexture.colorSpace = THREE.NoColorSpace;
+  disposables.push(keyboardTexture);
+
+  const darkPlasticMaterial = new THREE.MeshStandardMaterial({
+    color: 0x000000,
+    roughness: 0.9,
+    metalness: 0.9,
+  });
+  const cameraMaterial = new THREE.MeshBasicMaterial({
+    color: 0x333333,
+    toneMapped: false,
+  });
+  const baseMetalMaterial = new THREE.MeshStandardMaterial({
+    color: 0xcecfd3,
+  });
+  const logoMaterial = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    toneMapped: false,
+  });
+  const screenMaterial = new THREE.MeshBasicMaterial({
+    map: screenImageTexture,
+    color: 0xffffff,
+    transparent: true,
+    opacity: 0.96,
+    side: THREE.DoubleSide,
+    toneMapped: false,
+  });
+  const keyboardMaterial = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    alphaMap: keyboardTexture,
+    transparent: true,
+    toneMapped: false,
+  });
+
+  [
+    darkPlasticMaterial,
+    cameraMaterial,
+    baseMetalMaterial,
+    logoMaterial,
+    screenMaterial,
+    keyboardMaterial,
+  ].forEach((mat) => disposables.push(mat));
+
+  const laptop = new THREE.Group();
+  laptop.position.set(x, y, z);
+  laptop.rotation.y = -0.42;
+  laptop.scale.setScalar(1.55);
+  parent.add(laptop);
+
+  const bottom = new THREE.Group();
+  laptop.add(bottom);
+
+  const baseW = 0.312;
+  const baseD = 0.221;
+  const baseH = 0.01;
+  addBox(bottom, baseMetalMaterial, baseW, baseH, baseD, 0, 0, 0);
+  addBox(bottom, darkPlasticMaterial, baseW - 0.012, 0.002, baseD - 0.018, 0, baseH, 0.004, {
+    cast: false,
+  });
+
+  const legW = 0.018;
+  const legH = 0.004;
+  const legX = baseW / 2 - 0.03;
+  const legZ = baseD / 2 - 0.028;
+  addBox(bottom, darkPlasticMaterial, legW, legH, 0.028, -legX, -legH, -legZ, { receive: false });
+  addBox(bottom, darkPlasticMaterial, legW, legH, 0.028, legX, -legH, -legZ, { receive: false });
+  addBox(bottom, darkPlasticMaterial, legW, legH, 0.028, -legX, -legH, legZ, { receive: false });
+  addBox(bottom, darkPlasticMaterial, legW, legH, 0.028, legX, -legH, legZ, { receive: false });
+
+  const keyboardKeys = new THREE.Mesh(new THREE.PlaneGeometry(0.277, 0.116), keyboardMaterial);
+  keyboardKeys.rotation.x = -Math.PI / 2;
+  keyboardKeys.position.set(0, baseH + 0.0026, 0.028);
+  bottom.add(keyboardKeys);
+
+  addBox(bottom, darkPlasticMaterial, 0.08, 0.001, 0.048, 0, baseH + 0.0018, 0.082, { cast: false });
+
+  const lid = new THREE.Group();
+  lid.position.set(0, baseH, -baseD / 2);
+  lid.rotation.x = -0.18 * Math.PI;
+  laptop.add(lid);
+
+  const lidH = 0.221;
+  const lidW = 0.312;
+  addBox(lid, baseMetalMaterial, lidW, lidH, 0.006, 0, 0, -0.004);
+
+  const bezel = 0.012;
+  addBox(lid, darkPlasticMaterial, lidW - 0.004, bezel, 0.002, 0, lidH - bezel, 0.001, {
+    cast: false,
+  });
+  addBox(lid, darkPlasticMaterial, lidW - 0.004, bezel, 0.002, 0, 0.002, 0.001, { cast: false });
+  addBox(lid, darkPlasticMaterial, bezel, lidH - bezel * 2, 0.002, -lidW / 2 + bezel / 2 + 0.002, bezel, 0.001, {
+    cast: false,
+  });
+  addBox(lid, darkPlasticMaterial, bezel, lidH - bezel * 2, 0.002, lidW / 2 - bezel / 2 - 0.002, bezel, 0.001, {
+    cast: false,
+  });
+
+  const screenMesh = new THREE.Mesh(new THREE.PlaneGeometry(screenW, screenH), screenMaterial);
+  screenMesh.position.set(0, lidH / 2, 0.004);
+  lid.add(screenMesh);
+
+  const darkScreen = new THREE.Mesh(new THREE.PlaneGeometry(screenW, screenH), darkPlasticMaterial);
+  darkScreen.position.set(0, lidH / 2, -0.0005);
+  lid.add(darkScreen);
+
+  const screenLight = new THREE.RectAreaLight(0xffffff, 2.2, screenW, screenH);
+  screenLight.position.set(0, lidH / 2, 0.01);
+  screenLight.lookAt(0, lidH / 2, 1);
+  lid.add(screenLight);
+
+  const webcam = new THREE.Mesh(new THREE.CircleGeometry(0.0032, 12), cameraMaterial);
+  webcam.position.set(0, lidH - 0.01, 0.0026);
+  lid.add(webcam);
+
+  const logo = new THREE.Mesh(new THREE.CircleGeometry(0.012, 20), logoMaterial);
+  logo.position.set(0, lidH / 2, -0.0072);
+  logo.rotation.y = Math.PI;
+  lid.add(logo);
+}
+
 function buildRoom(scene: THREE.Scene, disposables: Disposable[]) {
   const woodMap = createWoodTexture();
   disposables.push(woodMap);
@@ -103,12 +244,6 @@ function buildRoom(scene: THREE.Scene, disposables: Disposable[]) {
       emissiveIntensity: 0.35,
       transparent: true,
       opacity: 0.55,
-    }),
-    screen: new THREE.MeshStandardMaterial({
-      color: 0x1b2830,
-      emissive: 0x4ea3b8,
-      emissiveIntensity: 0.85,
-      roughness: 0.25,
     }),
     shade: new THREE.MeshStandardMaterial({
       color: 0xf3e2c4,
@@ -227,9 +362,7 @@ function buildRoom(scene: THREE.Scene, disposables: Disposable[]) {
   addBox(room, mats.wood, 0.06, 0.72, 0.06, deskX - 0.3, 0, deskZ + 0.6);
   addBox(room, mats.wood, 0.06, 0.72, 0.06, deskX + 0.3, 0, deskZ + 0.6);
 
-  addBox(room, mats.metal, 0.32, 0.012, 0.22, deskX - 0.04, 0.77, deskZ - 0.12);
-  const screen = addBox(room, mats.screen, 0.32, 0.2, 0.012, deskX - 0.04, 0.79, deskZ - 0.24);
-  screen.rotation.x = -0.12;
+  addMacBook(room, disposables, deskX - 0.02, 0.77, deskZ);
   addBox(room, mats.fabric, 0.07, 0.09, 0.07, deskX + 0.22, 0.77, deskZ + 0.38);
 
   addBox(room, mats.wood, 0.4, 0.06, 0.4, deskX - 0.72, 0.42, deskZ);
@@ -311,8 +444,6 @@ function buildRoom(scene: THREE.Scene, disposables: Disposable[]) {
       disposables.push(child.geometry);
     }
   });
-
-  return { mats };
 }
 
 function addLights(scene: THREE.Scene) {
@@ -371,7 +502,7 @@ export function initRoom(canvas: HTMLCanvasElement): () => void {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   disposables.push(renderer);
 
-  const { mats } = buildRoom(scene, disposables);
+  buildRoom(scene, disposables);
   addLights(scene);
 
   const controls = new OrbitControls(camera, renderer.domElement);
@@ -384,7 +515,6 @@ export function initRoom(canvas: HTMLCanvasElement): () => void {
   controls.minPolarAngle = 0.18;
   controls.update();
 
-  const start = performance.now();
   let frame = 0;
 
   const resize = () => {
@@ -397,8 +527,6 @@ export function initRoom(canvas: HTMLCanvasElement): () => void {
 
   const animate = () => {
     frame = requestAnimationFrame(animate);
-    const t = (performance.now() - start) / 1000;
-    mats.screen.emissiveIntensity = 0.7 + Math.sin(t * 1.6) * 0.18;
     controls.update();
     renderer.render(scene, camera);
   };

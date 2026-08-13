@@ -82,6 +82,19 @@ function addBox(
   return mesh;
 }
 
+function clamp01(value: number) {
+  return Math.min(1, Math.max(0, value));
+}
+
+function smoothstep(edge0: number, edge1: number, x: number) {
+  const t = clamp01((x - edge0) / Math.max(edge1 - edge0, 1e-6));
+  return t * t * (3 - 2 * t);
+}
+
+function lerp(a: number, b: number, t: number) {
+  return a + (b - a) * t;
+}
+
 function addMacBook(
   parent: THREE.Object3D,
   disposables: Disposable[],
@@ -219,6 +232,92 @@ function addMacBook(
   logo.position.set(0, lidH / 2, -0.0072);
   logo.rotation.y = Math.PI;
   lid.add(logo);
+}
+
+function addThreshold(scene: THREE.Scene, disposables: Disposable[]) {
+  const group = new THREE.Group();
+  scene.add(group);
+
+  const doorW = 0.94;
+  const doorH = 2.18;
+  const zWall = ROOM_D / 2;
+  const hw = ROOM_W / 2;
+  const hallW = 1.62;
+  const hallD = 2.05;
+  const hallH = 2.5;
+
+  const wallMat = new THREE.MeshStandardMaterial({ color: 0x12100e, roughness: 0.96 });
+  const frameMat = new THREE.MeshStandardMaterial({ color: 0xc4a07a, roughness: 0.55 });
+  const doorWood = new THREE.MeshStandardMaterial({
+    color: 0xb07a4a,
+    roughness: 0.48,
+    emissive: 0x3d2414,
+    emissiveIntensity: 0.12,
+  });
+  const doorPanel = new THREE.MeshStandardMaterial({
+    color: 0x8a5a38,
+    roughness: 0.58,
+    emissive: 0x2a1810,
+    emissiveIntensity: 0.08,
+  });
+  const brass = new THREE.MeshStandardMaterial({
+    color: 0xb08d57,
+    roughness: 0.32,
+    metalness: 0.78,
+  });
+  [wallMat, frameMat, doorWood, doorPanel, brass].forEach((mat) => disposables.push(mat));
+
+  const leftW = hw - doorW / 2;
+  addBox(group, wallMat, leftW, ROOM_H, WALL_T, -(hw + doorW / 2) / 2, 0, zWall + WALL_T / 2, {
+    cast: false,
+  });
+  addBox(group, wallMat, leftW, ROOM_H, WALL_T, (hw + doorW / 2) / 2, 0, zWall + WALL_T / 2, {
+    cast: false,
+  });
+  addBox(group, wallMat, doorW, ROOM_H - doorH, WALL_T, 0, doorH, zWall + WALL_T / 2, { cast: false });
+
+  addBox(group, frameMat, 0.08, doorH + 0.08, 0.08, -doorW / 2 - 0.02, 0, zWall + 0.04, { cast: false });
+  addBox(group, frameMat, 0.08, doorH + 0.08, 0.08, doorW / 2 + 0.02, 0, zWall + 0.04, { cast: false });
+  addBox(group, frameMat, doorW + 0.16, 0.08, 0.08, 0, doorH, zWall + 0.04, { cast: false });
+
+  addBox(group, wallMat, hallW, 0.05, hallD, 0, -0.05, zWall + hallD / 2, { cast: false });
+  addBox(group, wallMat, 0.08, hallH, hallD, -hallW / 2, 0, zWall + hallD / 2, { cast: false });
+  addBox(group, wallMat, 0.08, hallH, hallD, hallW / 2, 0, zWall + hallD / 2, { cast: false });
+  addBox(group, wallMat, hallW, 0.06, hallD, 0, hallH, zWall + hallD / 2, { cast: false });
+
+  const door = new THREE.Group();
+  door.position.set(-doorW / 2, 0, zWall + 0.02);
+  group.add(door);
+
+  addBox(door, doorWood, doorW, doorH, 0.046, doorW / 2, 0, 0);
+  const panelW = doorW * 0.36;
+  const panelH = doorH * 0.36;
+  addBox(door, doorPanel, panelW, panelH, 0.018, doorW * 0.3, doorH * 0.12, 0.018, { cast: false });
+  addBox(door, doorPanel, panelW, panelH, 0.018, doorW * 0.7, doorH * 0.12, 0.018, { cast: false });
+  addBox(door, doorPanel, panelW, panelH, 0.018, doorW * 0.3, doorH * 0.55, 0.018, { cast: false });
+  addBox(door, doorPanel, panelW, panelH, 0.018, doorW * 0.7, doorH * 0.55, 0.018, { cast: false });
+
+  const knob = new THREE.Mesh(new THREE.SphereGeometry(0.028, 12, 10), brass);
+  knob.position.set(doorW - 0.09, 1.02, 0.04);
+  knob.castShadow = true;
+  door.add(knob);
+  addBox(door, brass, 0.012, 0.08, 0.012, doorW - 0.09, 0.96, 0.03, { receive: false });
+
+  const doorLight = new THREE.PointLight(0xffe2c2, 14, 6.5, 1.6);
+  doorLight.position.set(0.08, 1.55, zWall + 1.05);
+  group.add(doorLight);
+
+  const doorFill = new THREE.SpotLight(0xffd7a8, 18, 4.5, Math.PI / 5, 0.45, 1.6);
+  doorFill.position.set(0.1, 1.7, zWall + 1.35);
+  doorFill.target.position.set(0, 1.15, zWall);
+  group.add(doorFill);
+  group.add(doorFill.target);
+
+  group.traverse((child: THREE.Object3D) => {
+    if (child instanceof THREE.Mesh) disposables.push(child.geometry);
+  });
+
+  return { group, door, doorLight, doorFill };
 }
 
 function buildRoom(scene: THREE.Scene, disposables: Disposable[]) {
@@ -444,6 +543,8 @@ function buildRoom(scene: THREE.Scene, disposables: Disposable[]) {
       disposables.push(child.geometry);
     }
   });
+
+  return { glass: mats.glass, shade: mats.shade };
 }
 
 function addLights(scene: THREE.Scene) {
@@ -480,42 +581,138 @@ function addLights(scene: THREE.Scene) {
   windowFill.position.set(-ROOM_W / 2 + 0.04, 1.6, 0.22);
   windowFill.lookAt(0, 1.4, 0.22);
   scene.add(windowFill);
+
+  return { hemi, sun, ceiling, lampLight, windowFill };
 }
 
-export function initRoom(canvas: HTMLCanvasElement): () => void {
+export function initRoom(
+  canvas: HTMLCanvasElement,
+  ui?: { hintEl?: HTMLElement },
+): () => void {
   const container = canvas.parentElement;
   if (!container) throw new Error('Room canvas needs a parent element');
 
   const disposables: Disposable[] = [];
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x1a1612);
+  const bgDark = new THREE.Color(0x000000);
+  const bgLit = new THREE.Color(0x1a1612);
+  const bgNow = new THREE.Color(0x000000);
+  scene.background = bgNow;
+  scene.fog = new THREE.FogExp2(0x000000, 0.18);
 
-  const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 80);
-  camera.position.set(2.45, 1.85, 3.85);
-
+  const camera = new THREE.PerspectiveCamera(54, 1, 0.08, 80);
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.15;
+  renderer.toneMappingExposure = 0.12;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   disposables.push(renderer);
 
-  buildRoom(scene, disposables);
-  addLights(scene);
+  const { glass, shade } = buildRoom(scene, disposables);
+  const lights = addLights(scene);
+  const { group: threshold, door, doorLight, doorFill } = addThreshold(scene, disposables);
+
+  const look = new THREE.Vector3();
+  const camDoor = new THREE.Vector3(0.06, 1.56, ROOM_D / 2 + 1.42);
+  const lookDoor = new THREE.Vector3(0, 1.28, ROOM_D / 2);
+  const camInside = new THREE.Vector3(0.12, 1.5, 0.72);
+  const lookInside = new THREE.Vector3(0.15, 1.18, -0.55);
+  const camFinal = new THREE.Vector3(2.45, 1.85, 3.85);
+  const lookFinal = new THREE.Vector3(0, 1.12, 0);
+
+  const T_HOLD = 0.85;
+  const T_OPEN = 4.7;
+  const T_ENTER = 7.6;
+  const T_LIGHTS = 9.3;
+  const T_END = 12.1;
+  const DOOR_OPEN = -2.02;
+
+  const setLightLevel = (k: number) => {
+    lights.hemi.intensity = 0.45 * k;
+    lights.sun.intensity = 2.1 * k;
+    lights.ceiling.intensity = 18 * k;
+    lights.lampLight.intensity = 8 * k;
+    lights.windowFill.intensity = 6 * k;
+    glass.emissiveIntensity = 0.35 * k;
+    shade.emissiveIntensity = 0.28 * k;
+    renderer.toneMappingExposure = lerp(0.1, 1.15, k);
+    bgNow.copy(bgDark).lerp(bgLit, k);
+    if (scene.fog instanceof THREE.FogExp2) {
+      scene.fog.density = lerp(0.2, 0, k);
+    }
+    doorLight.intensity = lerp(14, 0, clamp01(k * 1.4));
+    doorFill.intensity = lerp(18, 0, clamp01(k * 1.4));
+  };
+
+  const applyIntro = (time: number) => {
+    const open = smoothstep(T_HOLD, T_OPEN, time);
+    door.rotation.y = DOOR_OPEN * open;
+
+    const enter = smoothstep(T_OPEN, T_ENTER, time);
+    const reveal = smoothstep(T_LIGHTS, T_END, time);
+    const light = smoothstep(T_ENTER + 0.12, T_LIGHTS, time);
+
+    camera.position.lerpVectors(camDoor, camInside, enter);
+    camera.position.lerp(camFinal, reveal);
+    look.lerpVectors(lookDoor, lookInside, enter);
+    look.lerp(lookFinal, reveal);
+    camera.lookAt(look);
+    camera.fov = lerp(54, 48, Math.max(enter * 0.35, reveal));
+    camera.updateProjectionMatrix();
+
+    setLightLevel(light);
+    threshold.visible = reveal < 0.08;
+  };
 
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.06;
-  controls.target.set(0, 1.12, 0);
+  controls.target.copy(lookFinal);
   controls.minDistance = 2.2;
   controls.maxDistance = 9;
   controls.maxPolarAngle = Math.PI / 2 - 0.08;
   controls.minPolarAngle = 0.18;
-  controls.update();
+  controls.enabled = false;
 
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let introTime = reducedMotion ? T_END : 0;
+  let introDone = false;
+  let last = performance.now();
   let frame = 0;
+
+  const finishIntro = (fromSkip = false) => {
+    if (introDone) return;
+    introDone = true;
+    introTime = T_END;
+    applyIntro(T_END);
+    threshold.visible = false;
+    scene.fog = null;
+    camera.position.copy(camFinal);
+    camera.lookAt(lookFinal);
+    camera.fov = 48;
+    camera.updateProjectionMatrix();
+    controls.target.copy(lookFinal);
+    if (fromSkip) {
+      requestAnimationFrame(() => {
+        controls.enabled = true;
+      });
+    } else {
+      controls.enabled = true;
+    }
+    controls.update();
+    const hintEl = ui?.hintEl;
+    if (hintEl) {
+      hintEl.textContent = hintEl.dataset.hint ?? '';
+      hintEl.classList.remove('is-intro');
+    }
+  };
+
+  const skipIntro = () => finishIntro(true);
+
+  if (reducedMotion) finishIntro();
+  else applyIntro(0);
 
   const resize = () => {
     const width = container.clientWidth;
@@ -527,17 +724,39 @@ export function initRoom(canvas: HTMLCanvasElement): () => void {
 
   const animate = () => {
     frame = requestAnimationFrame(animate);
-    controls.update();
+    const now = performance.now();
+    const dt = Math.min((now - last) / 1000, 0.05);
+    last = now;
+
+    if (!introDone) {
+      introTime += dt;
+      if (introTime >= T_END) finishIntro();
+      else applyIntro(introTime);
+    } else {
+      controls.update();
+    }
+
     renderer.render(scene, camera);
+  };
+
+  const onPointer = () => skipIntro();
+  const onKey = (event: KeyboardEvent) => {
+    if (event.code === 'Space' || event.code === 'Enter' || event.code === 'Escape') {
+      skipIntro();
+    }
   };
 
   resize();
   animate();
   window.addEventListener('resize', resize);
+  canvas.addEventListener('pointerdown', onPointer);
+  window.addEventListener('keydown', onKey);
 
   return () => {
     cancelAnimationFrame(frame);
     window.removeEventListener('resize', resize);
+    canvas.removeEventListener('pointerdown', onPointer);
+    window.removeEventListener('keydown', onKey);
     controls.dispose();
     disposables.forEach((item) => item.dispose());
     scene.clear();

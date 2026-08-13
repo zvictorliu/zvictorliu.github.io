@@ -45,6 +45,7 @@ export type TranslationKeys = {
   };
   room: {
     hint: string;
+    skip: string;
   };
 };
 
@@ -95,6 +96,7 @@ const enTranslations: TranslationKeys = {
   },
   room: {
     hint: 'Drag to look around · scroll to zoom',
+    skip: 'Click to skip',
   },
 };
 
@@ -143,6 +145,7 @@ const zhTranslations: TranslationKeys = {
   },
   room: {
     hint: '拖动视角 · 滚轮缩放',
+    skip: '点击跳过',
   },
 };
 

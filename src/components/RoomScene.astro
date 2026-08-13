@@ -1,22 +1,26 @@
 ---
 interface Props {
   hint: string;
+  skip: string;
 }
 
-const { hint } = Astro.props;
+const { hint, skip } = Astro.props;
 ---
 
 <div class="room-stage">
   <canvas id="room-canvas"></canvas>
-  <p class="room-hint">{hint}</p>
+  <p class="room-hint is-intro" data-hint={hint} data-skip={skip}>{skip}</p>
 </div>
 
 <script>
   import { initRoom } from '../lib/room';
 
   const canvas = document.getElementById('room-canvas');
+  const hintEl = document.querySelector('.room-hint');
   if (canvas instanceof HTMLCanvasElement) {
-    const dispose = initRoom(canvas);
+    const dispose = initRoom(canvas, {
+      hintEl: hintEl instanceof HTMLElement ? hintEl : undefined,
+    });
     window.addEventListener('pagehide', dispose, { once: true });
   }
 </script>
@@ -27,7 +31,7 @@ const { hint } = Astro.props;
     width: 100%;
     height: calc(100vh - var(--header-height));
     overflow: hidden;
-    background: #1a1612;
+    background: #000;
   }
 
   #room-canvas {
@@ -49,5 +53,11 @@ const { hint } = Astro.props;
     pointer-events: none;
     text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
     white-space: nowrap;
+    transition: opacity 0.55s ease, letter-spacing 0.55s ease;
+  }
+
+  .room-hint.is-intro {
+    color: rgba(236, 232, 225, 0.4);
+    letter-spacing: 0.18em;
   }
 </style>

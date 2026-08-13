@@ -18,7 +18,7 @@ const toggleUrl = getRelativeLocaleUrl(targetLang, pathWithoutLocale);
 const homeUrl = getRelativeLocaleUrl(lang);
 const experienceUrl = `${homeUrl}#experience`;
 const educationUrl = `${homeUrl}#education`;
-const workUrl = getRelativeLocaleUrl(lang, '/project');
+const workUrl = `${homeUrl}#work`;
 const aboutUrl = getRelativeLocaleUrl(lang, '/about');
 
 const navItems = [
@@ -127,24 +127,14 @@ const navItems = [
   }
 
   .lang-toggle {
-    margin-left: 0.75rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 2.75rem;
-    padding: 0.3rem 0.6rem;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background: transparent;
+    margin-left: 0.5rem;
+    padding: 0.5rem 0.85rem;
     color: var(--text-secondary);
-    font-size: 0.8rem;
-    cursor: pointer;
+    font-size: 0.95rem;
     text-decoration: none;
-    transition: color 0.2s, border-color 0.2s;
   }
 
   .lang-toggle:hover {
-    border-color: var(--accent-color);
     color: var(--accent-color);
     text-decoration: none;
   }

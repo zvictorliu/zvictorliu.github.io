@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import HomePage from '../components/HomePage.astro';
-import { homeByLocale, contactEmail } from '../data/home';
+import { homeByLocale } from '../data/home';
 import { loadHomeCollections } from '../data/collections';
 
 const locale = 'zh' as const;
@@ -18,6 +18,5 @@ const { recentPosts, recentProjects, recentPublications } = await loadHomeCollec
     recentPosts={recentPosts}
     recentProjects={recentProjects}
     recentPublications={recentPublications}
-    contactEmail={contactEmail}
   />
 </Layout>

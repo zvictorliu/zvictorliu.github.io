@@ -27,9 +27,12 @@ export type TranslationKeys = {
   };
   work: {
     title: string;
+    homeTitle: string;
     seeAll: string;
     details: string;
     featured: string;
+    kindProject: string;
+    kindPublication: string;
   };
   publications: {
     title: string;
@@ -47,7 +50,7 @@ const enTranslations: TranslationKeys = {
   nav: {
     experience: 'Experience',
     education: 'Education',
-    work: 'Projects',
+    work: 'Work',
     about: 'About',
   },
   brand: 'Zongwei Liu',
@@ -70,9 +73,12 @@ const enTranslations: TranslationKeys = {
   },
   work: {
     title: 'Projects',
+    homeTitle: 'Work',
     seeAll: 'See all projects',
     details: 'Details',
     featured: 'Selected',
+    kindProject: 'Project',
+    kindPublication: 'Paper',
   },
   publications: {
     title: 'Publications',
@@ -88,12 +94,12 @@ const zhTranslations: TranslationKeys = {
   nav: {
     experience: '经历',
     education: '教育',
-    work: '项目',
+    work: '做过的事',
     about: '关于',
   },
   brand: '刘宗炜',
   profile: {
-    title: '研二找实习ing',
+    title: 'Agent 工程',
   },
   about: {
     biography: '个人简介',
@@ -110,10 +116,13 @@ const zhTranslations: TranslationKeys = {
     seeAll: '查看所有文章',
   },
   work: {
-    title: '项目经历',
+    title: '项目',
+    homeTitle: '做过的事',
     seeAll: '查看所有项目',
     details: '详情',
     featured: '精选',
+    kindProject: '项目',
+    kindPublication: '论文',
   },
   publications: {
     title: '发表',

@@ -1,5 +1,6 @@
 ---
 import Navbar from '../components/Navbar.astro';
+import { contactEmail } from '../data/home';
 
 interface Props {
   title?: string;
@@ -30,8 +31,11 @@ const lang = locale || Astro.currentLocale || 'en';
       <slot />
     </main>
     <footer class="site-footer">
-      <div class="container">
+      <div class="container footer-row">
         <p class="copyright">&copy; {new Date().getFullYear()} Zongwei Liu</p>
+        <p class="footer-email">
+          <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
+        </p>
       </div>
     </footer>
   </body>
@@ -126,8 +130,21 @@ const lang = locale || Astro.currentLocale || 'en';
     font-size: 0.85rem;
   }
 
-  .copyright {
+  .footer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .copyright,
+  .footer-email {
     margin: 0;
+  }
+
+  .footer-email a {
+    color: var(--text-secondary);
   }
 
   .section {
@@ -138,15 +155,6 @@ const lang = locale || Astro.currentLocale || 'en';
     font-size: 1.35rem;
     margin-bottom: 1.75rem;
     text-align: left;
-  }
-
-  .section-title::after {
-    content: '';
-    display: block;
-    width: 1.75rem;
-    height: 1px;
-    background: var(--accent-color);
-    margin-top: 0.55rem;
   }
 
   .section-subheading {

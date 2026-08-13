@@ -23,7 +23,6 @@ export type HomeProfile = {
   institutionUrl: string;
   bio: string;
   avatar: string;
-  interests: string[];
   social: SocialLink[];
 };
 
@@ -34,11 +33,12 @@ const zhProfile: HomeProfile = {
   role: 'Agent 工程',
   institution: '上海交通大学',
   institutionUrl: 'https://www.sjtu.edu.cn/',
-  bio: `本硕就读于上海交通大学，预计 2027 年毕业，目前在寻找 Agent 方向的工作。
+  bio: `我是刘宗炜，来自四川，在上海交通大学本科毕业后继续读研。目前正在准备秋招，主要意向是转行互联网、从事智能体相关岗位。
 
-做过 Agent Harness 与 Agent 应用落地相关项目，也在学习 RAG 和 Agent 评测，希望从事智能体开发工作。`,
+我的性格相对内向，比较喜欢宅家里，但如果有人带的话也乐意出去玩。
+
+我自认为并非高精力人士，也许是我还未找到真正热爱的东西，我希望能够早日遇见。`,
   avatar: '/images/avatar.jpg',
-  interests: ['Agent 框架', 'RAG', '评测'],
   social: [
     { label: '邮件', href: 'mailto:zvictorliu@outlook.com' },
     { label: 'GitHub', href: 'https://github.com/zvictorliu' },
@@ -51,11 +51,12 @@ const enProfile: HomeProfile = {
   role: 'Agent engineering',
   institution: 'Shanghai Jiao Tong University',
   institutionUrl: 'https://www.sjtu.edu.cn/',
-  bio: `MSc student in Electronic Information at Shanghai Jiao Tong University, expected to graduate in 2027. I am looking for internships in agent engineering.
+  bio: `I am Zongwei Liu, from Sichuan. I finished my undergraduate degree at Shanghai Jiao Tong University and stayed on for a master's. I am preparing for the autumn recruiting season, aiming to move into internet companies and work on agent-related roles.
 
-I have built agentic workflows and an agent harness, and I am studying RAG and agent evaluation. I want to work on agent systems.`,
+I am fairly introverted and prefer staying home, though I am happy to go out if someone takes me along.
+
+I do not think of myself as a high-energy person — maybe I just have not found what I truly love yet. I hope I will meet it soon.`,
   avatar: '/images/avatar.jpg',
-  interests: ['Agent harness', 'RAG', 'Evaluation'],
   social: [
     { label: 'Email', href: 'mailto:zvictorliu@outlook.com' },
     { label: 'GitHub', href: 'https://github.com/zvictorliu' },

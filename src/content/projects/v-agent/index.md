@@ -2,8 +2,8 @@
 title: 基于 OpenCode 的个人 Agent 实现
 titleEn: A personal agent built on the OpenCode architecture
 startDate: 2026-01-01
-endDate: 2026-04-22
-ongoing: true
+endDate: 2026-05-31
+ongoing: false
 summary: 一个参考 OpenCode 核心框架的最小 Agent，基于 Python 编写
 summaryEn: "A minimal Python agent that follows OpenCode's core loop: sessions, tools, and ReAct."
 tags:

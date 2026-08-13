@@ -34,9 +34,9 @@ const zhProfile: HomeProfile = {
   role: 'Agent 工程',
   institution: '上海交通大学',
   institutionUrl: 'https://www.sjtu.edu.cn/',
-  bio: `吾本蜀人，负笈申江。在交大读电子信息硕士，做智能体：搭过 Agent 工作流，写过一套 Harness，也在学评测和 RAG。
+  bio: `本硕就读于上海交通大学，预计 2027 年毕业，目前在寻找 Agent 方向的工作。
 
-本科测控，后来做导航算法，再转到 Agent。赛道换了几次，底层是通的。`,
+做过 Agent Harness 与 Agent 应用落地相关项目，也在学习 RAG 和 Agent 评测，希望从事智能体开发工作。`,
   avatar: '/images/avatar.jpg',
   interests: ['Agent 框架', 'RAG', '评测'],
   social: [
@@ -51,9 +51,9 @@ const enProfile: HomeProfile = {
   role: 'Agent engineering',
   institution: 'Shanghai Jiao Tong University',
   institutionUrl: 'https://www.sjtu.edu.cn/',
-  bio: `I grew up in Sichuan and study electronic information at Shanghai Jiao Tong University. I build agents — workflows, harnesses, and the evaluation around them.
+  bio: `MSc student in Electronic Information at Shanghai Jiao Tong University, expected to graduate in 2027. I am looking for internships in agent engineering.
 
-I started in instrumentation, spent time on GNSS, then moved to agents. The stack changed; the underlying logic did not.`,
+I have built agentic workflows and an agent harness, and I am studying RAG and agent evaluation. I want to work on agent systems.`,
   avatar: '/images/avatar.jpg',
   interests: ['Agent harness', 'RAG', 'Evaluation'],
   social: [
@@ -71,7 +71,7 @@ const zhEducation: ResumeItem[] = [
     logo: '/media/icons/brands/sjtulogo.svg',
     location: '上海',
     dateLabel: '2024年9月 – 至今',
-    description: '导航定位方向，同时把精力转到智能体工程。',
+    description: '硕士阶段研究导航定位。2025 年起决定转行，转向 Agent 方向。',
     current: true,
   },
   {
@@ -81,7 +81,7 @@ const zhEducation: ResumeItem[] = [
     logo: '/media/icons/brands/sjtulogo.svg',
     location: '上海',
     dateLabel: '2020年9月 – 2024年6月',
-    description: '',
+    description: '重点课程：程序设计、数据结构、操作系统、微机原理。',
   },
 ];
 
@@ -93,7 +93,7 @@ const enEducation: ResumeItem[] = [
     logo: '/media/icons/brands/sjtulogo.svg',
     location: 'Shanghai',
     dateLabel: 'Sep 2024 – Present',
-    description: 'GNSS research, while shifting toward agent engineering.',
+    description: 'Research in navigation and positioning. In 2025 I decided to move into agent engineering.',
     current: true,
   },
   {
@@ -103,7 +103,7 @@ const enEducation: ResumeItem[] = [
     logo: '/media/icons/brands/sjtulogo.svg',
     location: 'Shanghai',
     dateLabel: 'Sep 2020 – Jun 2024',
-    description: '',
+    description: 'Key courses: Programming, Data Structures, Operating Systems, Microcomputer Principles.',
   },
 ];
 

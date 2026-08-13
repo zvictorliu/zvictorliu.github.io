@@ -121,7 +121,7 @@ const zhTranslations: TranslationKeys = {
   },
   contact: {
     title: '联系',
-    message: '有事请写信，我会读。',
+    message: '请随时联系我',
   },
 };
 

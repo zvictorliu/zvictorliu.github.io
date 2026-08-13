@@ -5,7 +5,7 @@ export type SocialLink = {
   href: string;
 };
 
-export type PathItem = {
+export type ResumeItem = {
   title: string;
   org: string;
   orgUrl: string;
@@ -63,17 +63,7 @@ I started in instrumentation, spent time on GNSS, then moved to agents. The stac
   ],
 };
 
-const zhPath: PathItem[] = [
-  {
-    title: 'AI研发实习',
-    org: '华测导航',
-    orgUrl: 'https://www.chcnav.com/',
-    logo: '/media/icons/brands/huace.jpg',
-    location: '上海',
-    dateLabel: '2025年6月 – 至今',
-    description: '把 AI 嵌进团队日常，做提效工具与知识库助手。',
-    current: true,
-  },
+const zhEducation: ResumeItem[] = [
   {
     title: '电子信息硕士',
     org: '上海交通大学',
@@ -83,15 +73,6 @@ const zhPath: PathItem[] = [
     dateLabel: '2024年9月 – 至今',
     description: '导航定位方向，同时把精力转到智能体工程。',
     current: true,
-  },
-  {
-    title: '应用开发实习',
-    org: '软银机器人',
-    orgUrl: 'https://www.softbankrobotics.com.cn/',
-    logo: '/media/icons/brands/softbank-robotics.png',
-    location: '上海',
-    dateLabel: '2023年6月 – 2023年8月',
-    description: '开发 Pepper 机器人应用软件。',
   },
   {
     title: '测控技术与仪器学士',
@@ -104,17 +85,7 @@ const zhPath: PathItem[] = [
   },
 ];
 
-const enPath: PathItem[] = [
-  {
-    title: 'AI Research Intern',
-    org: 'CHC Navigation',
-    orgUrl: 'https://www.chcnav.com/',
-    logo: '/media/icons/brands/huace.jpg',
-    location: 'Shanghai',
-    dateLabel: 'Jun 2025 – Present',
-    description: 'Building AI tools and a knowledge-base assistant inside the team’s daily work.',
-    current: true,
-  },
+const enEducation: ResumeItem[] = [
   {
     title: 'MSc in Electronic Information',
     org: 'Shanghai Jiao Tong University',
@@ -124,15 +95,6 @@ const enPath: PathItem[] = [
     dateLabel: 'Sep 2024 – Present',
     description: 'GNSS research, while shifting toward agent engineering.',
     current: true,
-  },
-  {
-    title: 'Development Intern',
-    org: 'Softbank Robotics',
-    orgUrl: 'https://www.softbankrobotics.com.cn/',
-    logo: '/media/icons/brands/softbank-robotics.png',
-    location: 'Shanghai',
-    dateLabel: 'Jun 2023 – Aug 2023',
-    description: 'Developed application software for the Pepper robot.',
   },
   {
     title: 'BSc in Measurement and Instrumentation',
@@ -145,7 +107,54 @@ const enPath: PathItem[] = [
   },
 ];
 
-export const homeByLocale: Record<Locale, { profile: HomeProfile; path: PathItem[] }> = {
-  zh: { profile: zhProfile, path: zhPath },
-  en: { profile: enProfile, path: enPath },
+const zhExperience: ResumeItem[] = [
+  {
+    title: 'AI研发实习',
+    org: '华测导航',
+    orgUrl: 'https://www.chcnav.com/',
+    logo: '/media/icons/brands/huace.jpg',
+    location: '上海',
+    dateLabel: '2025年6月 – 至今',
+    description: '把 AI 嵌进团队日常，做提效工具与知识库助手。',
+    current: true,
+  },
+  {
+    title: '应用开发实习',
+    org: '软银机器人',
+    orgUrl: 'https://www.softbankrobotics.com.cn/',
+    logo: '/media/icons/brands/softbank-robotics.png',
+    location: '上海',
+    dateLabel: '2023年6月 – 2023年8月',
+    description: '开发 Pepper 机器人应用软件。',
+  },
+];
+
+const enExperience: ResumeItem[] = [
+  {
+    title: 'AI Research Intern',
+    org: 'CHC Navigation',
+    orgUrl: 'https://www.chcnav.com/',
+    logo: '/media/icons/brands/huace.jpg',
+    location: 'Shanghai',
+    dateLabel: 'Jun 2025 – Present',
+    description: 'Building AI tools and a knowledge-base assistant inside the team’s daily work.',
+    current: true,
+  },
+  {
+    title: 'Development Intern',
+    org: 'Softbank Robotics',
+    orgUrl: 'https://www.softbankrobotics.com.cn/',
+    logo: '/media/icons/brands/softbank-robotics.png',
+    location: 'Shanghai',
+    dateLabel: 'Jun 2023 – Aug 2023',
+    description: 'Developed application software for the Pepper robot.',
+  },
+];
+
+export const homeByLocale: Record<
+  Locale,
+  { profile: HomeProfile; education: ResumeItem[]; experience: ResumeItem[] }
+> = {
+  zh: { profile: zhProfile, education: zhEducation, experience: zhExperience },
+  en: { profile: enProfile, education: enEducation, experience: enExperience },
 };

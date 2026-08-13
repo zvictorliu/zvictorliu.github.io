@@ -5,7 +5,7 @@ import { homeByLocale, contactEmail } from '../data/home';
 import { loadHomeCollections } from '../data/collections';
 
 const locale = 'zh' as const;
-const { profile, path } = homeByLocale[locale];
+const { profile, education, experience } = homeByLocale[locale];
 const { recentPosts, recentProjects, recentPublications } = await loadHomeCollections();
 ---
 
@@ -13,7 +13,8 @@ const { recentPosts, recentProjects, recentPublications } = await loadHomeCollec
   <HomePage
     locale={locale}
     profile={profile}
-    path={path}
+    education={education}
+    experience={experience}
     recentPosts={recentPosts}
     recentProjects={recentProjects}
     recentPublications={recentPublications}

@@ -2,12 +2,14 @@
 import { getRelativeLocaleUrl } from 'astro:i18n';
 import type { CollectionEntry } from 'astro:content';
 import { useTranslations, type Locale } from '../i18n';
-import type { HomeProfile, PathItem } from '../data/home';
+import type { HomeProfile, ResumeItem } from '../data/home';
+import Timeline from './Timeline.astro';
 
 interface Props {
   locale: Locale;
   profile: HomeProfile;
-  path: PathItem[];
+  education: ResumeItem[];
+  experience: ResumeItem[];
   recentPosts: CollectionEntry<'post'>[];
   recentProjects: CollectionEntry<'projects'>[];
   recentPublications: CollectionEntry<'publication'>[];
@@ -17,7 +19,8 @@ interface Props {
 const {
   locale,
   profile,
-  path,
+  education,
+  experience,
   recentPosts,
   recentProjects,
   recentPublications,
@@ -68,13 +71,16 @@ const projectAward = (project: CollectionEntry<'projects'>) =>
 
 <section id="about" class="section hero">
   <div class="container hero-grid">
+    <div class="hero-photo">
+      <img src={profile.avatar} alt={profile.name} class="avatar" />
+    </div>
     <div class="hero-copy">
+      <h1 class="hero-name">{profile.name}</h1>
       <p class="hero-kicker">
         <a href={profile.institutionUrl} target="_blank" rel="noopener">{profile.institution}</a>
         <span class="meta-sep">·</span>
         {profile.role}
       </p>
-      <h1 class="hero-name">{profile.name}</h1>
       {profile.bio.split('\n').filter(Boolean).map((paragraph) => (
         <p class="bio-text">{paragraph.trim()}</p>
       ))}
@@ -91,9 +97,20 @@ const projectAward = (project: CollectionEntry<'projects'>) =>
         ))}
       </div>
     </div>
-    <div class="hero-photo">
-      <img src={profile.avatar} alt={profile.name} class="avatar" />
-    </div>
+  </div>
+</section>
+
+<section id="education" class="section">
+  <div class="container">
+    <h2 class="section-title">{t.education.title}</h2>
+    <Timeline items={education} />
+  </div>
+</section>
+
+<section id="experience" class="section">
+  <div class="container">
+    <h2 class="section-title">{t.experience.title}</h2>
+    <Timeline items={experience} />
   </div>
 </section>
 
@@ -160,43 +177,6 @@ const projectAward = (project: CollectionEntry<'projects'>) =>
     </div>
   </section>
 )}
-
-<section id="path" class="section">
-  <div class="container">
-    <h2 class="section-title">{t.path.title}</h2>
-    <div class="experience-timeline">
-      {path.map((item, index) => (
-        <div class="experience-item">
-          <div class="timeline-marker">
-            <span class:list={['marker-dot', item.current && 'current']}></span>
-            {index < path.length - 1 && <div class="timeline-line"></div>}
-          </div>
-          <div class="experience-card">
-            <div class="card-header">
-              <div class="company-logo">
-                <a href={item.orgUrl} target="_blank" rel="noopener">
-                  <img src={item.logo} alt={item.org} width="56" height="56" />
-                </a>
-              </div>
-              <div class="card-title-group">
-                <h3 class="card-title">{item.title}</h3>
-                <p class="card-company">
-                  <a href={item.orgUrl} target="_blank" rel="noopener">{item.org}</a>
-                </p>
-                <p class="card-meta">
-                  {item.dateLabel}
-                  <span class="meta-sep">·</span>
-                  {item.location}
-                </p>
-              </div>
-            </div>
-            {item.description && <p class="card-description">{item.description}</p>}
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-</section>
 
 {recentPublications.length > 0 && (
   <section id="publications" class="section">
@@ -273,21 +253,21 @@ const projectAward = (project: CollectionEntry<'projects'>) =>
 
   .hero-grid {
     display: grid;
-    grid-template-columns: 1fr 168px;
-    gap: 3rem;
+    grid-template-columns: 168px 1fr;
+    gap: 2.5rem;
     align-items: start;
   }
 
   .hero-kicker {
-    margin: 0 0 0.55rem;
+    margin: 0 0 1rem;
     color: var(--text-secondary);
     font-size: 0.95rem;
   }
 
   .hero-name {
-    font-size: 2.7rem;
-    line-height: 1.2;
-    margin: 0 0 1.25rem;
+    font-size: 2.1rem;
+    line-height: 1.25;
+    margin: 0 0 0.45rem;
   }
 
   .avatar {
@@ -396,79 +376,6 @@ const projectAward = (project: CollectionEntry<'projects'>) =>
     color: var(--text-secondary);
   }
 
-  .experience-item {
-    display: flex;
-    gap: 1.25rem;
-  }
-
-  .timeline-marker {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 0.45rem;
-  }
-
-  .marker-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    border: 1px solid var(--accent-color);
-    background: var(--bg-color);
-  }
-
-  .marker-dot.current {
-    background: var(--accent-color);
-  }
-
-  .timeline-line {
-    width: 1px;
-    flex: 1;
-    background: var(--border-color);
-    margin-top: 0.5rem;
-  }
-
-  .experience-card {
-    flex: 1;
-    padding: 0 0 1.75rem;
-  }
-
-  .card-header {
-    display: flex;
-    gap: 0.9rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .company-logo img {
-    width: 40px;
-    height: 40px;
-    object-fit: contain;
-  }
-
-  .card-title {
-    margin: 0 0 0.2rem;
-    font-size: 1.05rem;
-  }
-
-  .card-company {
-    margin: 0 0 0.2rem;
-    color: var(--text-secondary);
-  }
-
-  .card-meta {
-    margin: 0;
-    font-size: 0.88rem;
-    color: var(--text-secondary);
-  }
-
-  .meta-sep {
-    margin: 0 0.4rem;
-  }
-
-  .card-description {
-    margin: 0;
-    color: var(--text-secondary);
-  }
-
   .contact-text {
     color: var(--text-secondary);
     margin: 0 0 0.6rem;
@@ -492,11 +399,7 @@ const projectAward = (project: CollectionEntry<'projects'>) =>
     }
 
     .hero-name {
-      font-size: 2.1rem;
-    }
-
-    .hero-photo {
-      order: -1;
+      font-size: 1.85rem;
     }
 
     .avatar {

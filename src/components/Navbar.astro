@@ -16,13 +16,15 @@ const toggleLabel = targetLang === 'en' ? 'EN' : '中文';
 const toggleUrl = getRelativeLocaleUrl(targetLang, pathWithoutLocale);
 
 const homeUrl = getRelativeLocaleUrl(lang);
+const experienceUrl = `${homeUrl}#experience`;
+const educationUrl = `${homeUrl}#education`;
 const workUrl = getRelativeLocaleUrl(lang, '/project');
-const pathUrl = `${homeUrl}#path`;
 const aboutUrl = getRelativeLocaleUrl(lang, '/about');
 
 const navItems = [
+  { label: t.nav.education, url: educationUrl },
+  { label: t.nav.experience, url: experienceUrl },
   { label: t.nav.work, url: workUrl },
-  { label: t.nav.path, url: pathUrl },
   { label: t.nav.about, url: aboutUrl },
 ];
 ---

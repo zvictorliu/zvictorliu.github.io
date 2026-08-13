@@ -2,8 +2,9 @@ export type Locale = 'en' | 'zh';
 
 export type TranslationKeys = {
   nav: {
+    experience: string;
+    education: string;
     work: string;
-    path: string;
     about: string;
   };
   brand: string;
@@ -14,7 +15,10 @@ export type TranslationKeys = {
     biography: string;
     interests: string;
   };
-  path: {
+  education: {
+    title: string;
+  };
+  experience: {
     title: string;
   };
   posts: {
@@ -41,8 +45,9 @@ type Translations = Record<Locale, TranslationKeys>;
 
 const enTranslations: TranslationKeys = {
   nav: {
-    work: 'Work',
-    path: 'Path',
+    experience: 'Experience',
+    education: 'Education',
+    work: 'Projects',
     about: 'About',
   },
   brand: 'Zongwei Liu',
@@ -53,15 +58,18 @@ const enTranslations: TranslationKeys = {
     biography: 'Biography',
     interests: 'Interests',
   },
-  path: {
-    title: 'Path',
+  education: {
+    title: 'Education',
+  },
+  experience: {
+    title: 'Experience',
   },
   posts: {
     title: 'Writing',
     seeAll: 'See all posts',
   },
   work: {
-    title: 'Work',
+    title: 'Projects',
     seeAll: 'See all projects',
     details: 'Details',
     featured: 'Selected',
@@ -78,8 +86,9 @@ const enTranslations: TranslationKeys = {
 
 const zhTranslations: TranslationKeys = {
   nav: {
-    work: '作品',
-    path: '路径',
+    experience: '经历',
+    education: '教育',
+    work: '项目',
     about: '关于',
   },
   brand: '刘宗炜',
@@ -90,15 +99,18 @@ const zhTranslations: TranslationKeys = {
     biography: '个人简介',
     interests: '兴趣点',
   },
-  path: {
-    title: '路径',
+  education: {
+    title: '教育经历',
+  },
+  experience: {
+    title: '实习经历',
   },
   posts: {
     title: '写作',
     seeAll: '查看所有文章',
   },
   work: {
-    title: '作品',
+    title: '项目经历',
     seeAll: '查看所有项目',
     details: '详情',
     featured: '精选',

@@ -157,7 +157,7 @@ const projectAward = (project: CollectionEntry<'projects'>) =>
                 <a href={projectUrl(project.id)}>{projectTitle(project)}</a>
               </h3>
               <p class="entry-meta">{formatProjectDate(project)}</p>
-              {projectSummary(project) && <p class="entry-excerpt">{projectSummary(project)}</p>}
+              {projectSummary(project) && <p class="featured-summary">{projectSummary(project)}</p>}
               <div class="entry-links">
                 <a href={projectUrl(project.id)}>{t.work.details}</a>
                 {project.data.repo && (

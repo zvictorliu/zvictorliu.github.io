@@ -217,6 +217,34 @@ function addChairGLTF(
   });
 }
 
+function addWardrobeGLTF(
+  parent: THREE.Object3D,
+  disposables: Disposable[],
+  x: number,
+  z: number,
+): Promise<void> {
+  return loadGLTF('/media/wardrobe.glb', parent, disposables, {
+    x, yBottom: 0, z,
+    targetSize: 1.2,  // 衣柜宽约 120cm
+  }).then(({ model }) => {
+    (window as Record<string, unknown>).__wardrobe = model;
+  });
+}
+
+function addBedGLTF(
+  parent: THREE.Object3D,
+  disposables: Disposable[],
+  x: number,
+  z: number,
+): Promise<void> {
+  return loadGLTF('/media/bed.glb', parent, disposables, {
+    x, yBottom: 0, z,
+    targetSize: 1.95,  // 双人床宽约 195cm
+  }).then(({ model }) => {
+    (window as Record<string, unknown>).__bed = model;
+  });
+}
+
 function addThreshold(scene: THREE.Scene, disposables: Disposable[]) {
   const group = new THREE.Group();
   scene.add(group);
@@ -394,56 +422,17 @@ function buildRoom(scene: THREE.Scene, disposables: Disposable[]) {
   addBox(room, mats.linen, 0.22, winH + 0.12, 0.04, winX0 - 0.08, winY0 - 0.04, -hd + 0.08);
   addBox(room, mats.linen, 0.22, winH + 0.12, 0.04, winX1 + 0.08, winY0 - 0.04, -hd + 0.08);
 
-  // ── 床移到左墙 ──────────────────────────────────────────
-  // 床头板靠 -X 左墙，床沿 Z 轴展开（床宽=1.95 沿 Z，床深=1.28 沿 X）
+  // ── 床（GLB 模型，靠左墙）──────────────────────────────────────────
   const bedX = -hw + 0.98;   // 床中心 X（距左墙约半张床深）
   const bedZ = 0.1;           // 床中心 Z（房间中部偏前）
-  addBox(room, mats.wood, 1.28, 0.26, 1.95, bedX, 0, bedZ);                       // 床板
-  addBox(room, mats.wood, 0.07, 0.72, 1.95, bedX - 0.6, 0.26, bedZ);             // 床头板（靠左墙）
-  addBox(room, mats.linen, 1.2, 0.14, 1.86, bedX + 0.02, 0.26, bedZ);            // 床垫
-  addBox(room, mats.white, 0.36, 0.11, 0.52, bedX - 0.32, 0.4, bedZ - 0.5);     // 枕头
-  addBox(room, mats.sage, 0.82, 0.05, 1.86, bedX + 0.16, 0.4, bedZ);             // 毯子
-
-  // 床头柜（床头板右侧，靠左墙）
-  addBox(room, mats.wood, 0.42, 0.4, 0.4, bedX + 0.84, 0, bedZ - 0.72);
-  addBox(room, mats.white, 0.18, 0.22, 0.18, bedX + 0.84, 0.4, bedZ - 0.72);
-  const nightShade = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.14, 16, 1, true), mats.shade);
-  nightShade.position.set(bedX + 0.84, 0.7, bedZ - 0.72);
-  nightShade.castShadow = true;
-  room.add(nightShade);
+  addBedGLTF(room, disposables, bedX, bedZ);
 
   // 地毯（床前）
   addBox(room, mats.fabric, 1.5, 0.02, 1.9, bedX + 0.35, 0.001, bedZ + 0.85, { cast: false });
 
-  // ── 书柜移到门墙（+Z 方向）─────────────────────────────
-  // 门在 Z=+hd 中央，书柜放在门右侧（+X 方向）
-  const shelfX = 0.8;
-  const shelfZ = hd - 0.18;
-  addBox(room, mats.wood, 1.18, 2.02, 0.04, shelfX, 0, shelfZ + 0.15);
-  addBox(room, mats.wood, 0.04, 2.02, 0.34, shelfX - 0.57, 0, shelfZ);
-  addBox(room, mats.wood, 0.04, 2.02, 0.34, shelfX + 0.57, 0, shelfZ);
-  addBox(room, mats.wood, 1.18, 0.04, 0.34, shelfX, 0, shelfZ);
-  addBox(room, mats.wood, 1.18, 0.04, 0.34, shelfX, 1.98, shelfZ);
-  for (let i = 0; i < 4; i += 1) {
-    addBox(room, mats.wood, 1.1, 0.03, 0.3, shelfX, 0.42 + i * 0.42, shelfZ - 0.02, { cast: false });
-  }
-
-  const rand = mulberry32(42);
-  const bookColors = [0x8f2d3a, 0x3d4f5f, 0xc4a35a, 0x5b6b4a, 0x6b4a32, 0xd9c4a8, 0x4a6274];
-  for (let row = 0; row < 4; row += 1) {
-    let xCursor = shelfX - 0.48;
-    const y = 0.45 + row * 0.42;
-    while (xCursor < shelfX + 0.48) {
-      const bw = 0.06 + rand() * 0.07;
-      if (xCursor + bw > shelfX + 0.5) break;
-      const bh = 0.22 + rand() * 0.12;
-      const color = bookColors[Math.floor(rand() * bookColors.length)];
-      const bookMat = new THREE.MeshStandardMaterial({ color, roughness: 0.7 });
-      disposables.push(bookMat);
-      addBox(room, bookMat, bw, bh, 0.2, xCursor + bw / 2, y, shelfZ - 0.04);
-      xCursor += bw + 0.012;
-    }
-  }
+  // ── 衣柜（GLB 模型，门墙右侧）─────────────────────────────
+  // 门在 Z=+hd 中央，衣柜放在门右侧（+X 方向）
+  addWardrobeGLTF(room, disposables, 0.8, hd - 0.3);
 
   const deskX = 2.30;
   const deskZ = -1.45;

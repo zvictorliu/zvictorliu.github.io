@@ -1,8 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js';
-import keyboardOverlayUrl from '../assets/room/keyboard-overlay.png?url';
-import macbookScreenUrl from '../assets/room/macbook-screen.png?url';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const ROOM_W = 5.2;
 const ROOM_D = 4.2;
@@ -95,143 +94,61 @@ function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
 
-function addMacBook(
+function addLaptopGLTF(
   parent: THREE.Object3D,
   disposables: Disposable[],
   x: number,
   y: number,
   z: number,
-) {
-  const screenW = 0.294;
-  const screenH = 0.2;
-  const loader = new THREE.TextureLoader();
+): Promise<void> {
+  return new Promise((resolve) => {
+    const loader = new GLTFLoader();
+    loader.load(
+      '/media/laptop.glb',
+      (gltf) => {
+        const model = gltf.scene;
 
-  const screenImageTexture = loader.load(macbookScreenUrl, (tex) => {
-    tex.wrapS = THREE.RepeatWrapping;
-    tex.repeat.y = (tex.image.width / tex.image.height / screenW) * screenH;
+        // 计算模型包围盒，自动缩放到合适大小（约 0.35m 宽）
+        const box = new THREE.Box3().setFromObject(model);
+        const size = new THREE.Vector3();
+        box.getSize(size);
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const targetSize = 0.48;
+        const scale = targetSize / maxDim;
+        model.scale.setScalar(scale);
+
+        // 重新计算缩放后的包围盒，底部对齐到 y=0
+        box.setFromObject(model);
+        const center = new THREE.Vector3();
+        box.getCenter(center);
+        model.position.set(
+          x - center.x,
+          y - box.min.y,
+          z - center.z,
+        );
+        // 屏幕朝向相机，背靠墙面正放
+        model.rotation.y = Math.PI / 2;
+
+        model.traverse((child) => {
+          if (child instanceof THREE.Mesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+            disposables.push(child.geometry);
+            const mats = Array.isArray(child.material) ? child.material : [child.material];
+            mats.forEach((mat) => disposables.push(mat));
+          }
+        });
+
+        parent.add(model);
+        resolve();
+      },
+      undefined,
+      (err) => {
+        console.error('Failed to load laptop GLB:', err);
+        resolve();
+      },
+    );
   });
-  screenImageTexture.colorSpace = THREE.SRGBColorSpace;
-  disposables.push(screenImageTexture);
-
-  const keyboardTexture = loader.load(keyboardOverlayUrl);
-  keyboardTexture.colorSpace = THREE.NoColorSpace;
-  disposables.push(keyboardTexture);
-
-  const darkPlasticMaterial = new THREE.MeshStandardMaterial({
-    color: 0x000000,
-    roughness: 0.9,
-    metalness: 0.9,
-  });
-  const cameraMaterial = new THREE.MeshBasicMaterial({
-    color: 0x333333,
-    toneMapped: false,
-  });
-  const baseMetalMaterial = new THREE.MeshStandardMaterial({
-    color: 0xcecfd3,
-  });
-  const logoMaterial = new THREE.MeshBasicMaterial({
-    color: 0xffffff,
-    toneMapped: false,
-  });
-  const screenMaterial = new THREE.MeshBasicMaterial({
-    map: screenImageTexture,
-    color: 0xffffff,
-    transparent: true,
-    opacity: 0.96,
-    side: THREE.DoubleSide,
-    toneMapped: false,
-  });
-  const keyboardMaterial = new THREE.MeshBasicMaterial({
-    color: 0xffffff,
-    alphaMap: keyboardTexture,
-    transparent: true,
-    toneMapped: false,
-  });
-
-  [
-    darkPlasticMaterial,
-    cameraMaterial,
-    baseMetalMaterial,
-    logoMaterial,
-    screenMaterial,
-    keyboardMaterial,
-  ].forEach((mat) => disposables.push(mat));
-
-  const laptop = new THREE.Group();
-  laptop.position.set(x, y, z);
-  laptop.rotation.y = -0.42;
-  laptop.scale.setScalar(1.55);
-  parent.add(laptop);
-
-  const bottom = new THREE.Group();
-  laptop.add(bottom);
-
-  const baseW = 0.312;
-  const baseD = 0.221;
-  const baseH = 0.01;
-  addBox(bottom, baseMetalMaterial, baseW, baseH, baseD, 0, 0, 0);
-  addBox(bottom, darkPlasticMaterial, baseW - 0.012, 0.002, baseD - 0.018, 0, baseH, 0.004, {
-    cast: false,
-  });
-
-  const legW = 0.018;
-  const legH = 0.004;
-  const legX = baseW / 2 - 0.03;
-  const legZ = baseD / 2 - 0.028;
-  addBox(bottom, darkPlasticMaterial, legW, legH, 0.028, -legX, -legH, -legZ, { receive: false });
-  addBox(bottom, darkPlasticMaterial, legW, legH, 0.028, legX, -legH, -legZ, { receive: false });
-  addBox(bottom, darkPlasticMaterial, legW, legH, 0.028, -legX, -legH, legZ, { receive: false });
-  addBox(bottom, darkPlasticMaterial, legW, legH, 0.028, legX, -legH, legZ, { receive: false });
-
-  const keyboardKeys = new THREE.Mesh(new THREE.PlaneGeometry(0.277, 0.116), keyboardMaterial);
-  keyboardKeys.rotation.x = -Math.PI / 2;
-  keyboardKeys.position.set(0, baseH + 0.0026, 0.028);
-  bottom.add(keyboardKeys);
-
-  addBox(bottom, darkPlasticMaterial, 0.08, 0.001, 0.048, 0, baseH + 0.0018, 0.082, { cast: false });
-
-  const lid = new THREE.Group();
-  lid.position.set(0, baseH, -baseD / 2);
-  lid.rotation.x = -0.18 * Math.PI;
-  laptop.add(lid);
-
-  const lidH = 0.221;
-  const lidW = 0.312;
-  addBox(lid, baseMetalMaterial, lidW, lidH, 0.006, 0, 0, -0.004);
-
-  const bezel = 0.012;
-  addBox(lid, darkPlasticMaterial, lidW - 0.004, bezel, 0.002, 0, lidH - bezel, 0.001, {
-    cast: false,
-  });
-  addBox(lid, darkPlasticMaterial, lidW - 0.004, bezel, 0.002, 0, 0.002, 0.001, { cast: false });
-  addBox(lid, darkPlasticMaterial, bezel, lidH - bezel * 2, 0.002, -lidW / 2 + bezel / 2 + 0.002, bezel, 0.001, {
-    cast: false,
-  });
-  addBox(lid, darkPlasticMaterial, bezel, lidH - bezel * 2, 0.002, lidW / 2 - bezel / 2 - 0.002, bezel, 0.001, {
-    cast: false,
-  });
-
-  const screenMesh = new THREE.Mesh(new THREE.PlaneGeometry(screenW, screenH), screenMaterial);
-  screenMesh.position.set(0, lidH / 2, 0.004);
-  lid.add(screenMesh);
-
-  const darkScreen = new THREE.Mesh(new THREE.PlaneGeometry(screenW, screenH), darkPlasticMaterial);
-  darkScreen.position.set(0, lidH / 2, -0.0005);
-  lid.add(darkScreen);
-
-  const screenLight = new THREE.RectAreaLight(0xffffff, 2.2, screenW, screenH);
-  screenLight.position.set(0, lidH / 2, 0.01);
-  screenLight.lookAt(0, lidH / 2, 1);
-  lid.add(screenLight);
-
-  const webcam = new THREE.Mesh(new THREE.CircleGeometry(0.0032, 12), cameraMaterial);
-  webcam.position.set(0, lidH - 0.01, 0.0026);
-  lid.add(webcam);
-
-  const logo = new THREE.Mesh(new THREE.CircleGeometry(0.012, 20), logoMaterial);
-  logo.position.set(0, lidH / 2, -0.0072);
-  logo.rotation.y = Math.PI;
-  lid.add(logo);
 }
 
 function addThreshold(scene: THREE.Scene, disposables: Disposable[]) {
@@ -461,7 +378,7 @@ function buildRoom(scene: THREE.Scene, disposables: Disposable[]) {
   addBox(room, mats.wood, 0.06, 0.72, 0.06, deskX - 0.3, 0, deskZ + 0.6);
   addBox(room, mats.wood, 0.06, 0.72, 0.06, deskX + 0.3, 0, deskZ + 0.6);
 
-  addMacBook(room, disposables, deskX - 0.02, 0.77, deskZ);
+  addLaptopGLTF(room, disposables, deskX - 0.02, 0.77, deskZ);
   addBox(room, mats.fabric, 0.07, 0.09, 0.07, deskX + 0.22, 0.77, deskZ + 0.38);
 
   addBox(room, mats.wood, 0.4, 0.06, 0.4, deskX - 0.72, 0.42, deskZ);

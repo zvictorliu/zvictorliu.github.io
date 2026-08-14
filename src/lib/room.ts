@@ -94,40 +94,44 @@ function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
 
-function addLaptopGLTF(
+// 通用 GLTF 加载辅助：加载模型，自动缩放至 targetSize，底部对齐到 (x, yBottom, z)
+// 返回 { model, surfaceY }，其中 surfaceY 是模型加载后的顶面 Y 坐标
+function loadGLTF(
+  url: string,
   parent: THREE.Object3D,
   disposables: Disposable[],
-  x: number,
-  y: number,
-  z: number,
-): Promise<void> {
-  return new Promise((resolve) => {
+  options: {
+    x: number;
+    yBottom: number;
+    z: number;
+    targetSize: number;
+    rotationY?: number;
+  },
+): Promise<{ model: THREE.Group; surfaceY: number }> {
+  return new Promise((resolve, reject) => {
     const loader = new GLTFLoader();
     loader.load(
-      '/media/laptop.glb',
+      url,
       (gltf) => {
         const model = gltf.scene;
 
-        // 计算模型包围盒，自动缩放到合适大小（约 0.35m 宽）
         const box = new THREE.Box3().setFromObject(model);
         const size = new THREE.Vector3();
         box.getSize(size);
         const maxDim = Math.max(size.x, size.y, size.z);
-        const targetSize = 0.48;
-        const scale = targetSize / maxDim;
-        model.scale.setScalar(scale);
+        model.scale.setScalar(options.targetSize / maxDim);
 
-        // 重新计算缩放后的包围盒，底部对齐到 y=0
         box.setFromObject(model);
         const center = new THREE.Vector3();
         box.getCenter(center);
         model.position.set(
-          x - center.x,
-          y - box.min.y,
-          z - center.z,
+          options.x - center.x,
+          options.yBottom - box.min.y,
+          options.z - center.z,
         );
-        // 屏幕朝向相机，背靠墙面正放
-        model.rotation.y = Math.PI / 2;
+        if (options.rotationY !== undefined) model.rotation.y = options.rotationY;
+
+        const surfaceY = options.yBottom + (box.max.y - box.min.y);
 
         model.traverse((child) => {
           if (child instanceof THREE.Mesh) {
@@ -140,14 +144,58 @@ function addLaptopGLTF(
         });
 
         parent.add(model);
-        resolve();
+        resolve({ model, surfaceY });
       },
       undefined,
       (err) => {
-        console.error('Failed to load laptop GLB:', err);
-        resolve();
+        console.error(`Failed to load ${url}:`, err);
+        reject(err);
       },
     );
+  });
+}
+
+function addLaptopGLTF(
+  parent: THREE.Object3D,
+  disposables: Disposable[],
+  x: number,
+  yBottom: number,
+  z: number,
+): Promise<void> {
+  return loadGLTF('/media/laptop.glb', parent, disposables, {
+    x, yBottom, z,
+    targetSize: 0.48,
+    rotationY: Math.PI / 2,  // 屏幕朝向相机，背靠墙面正放
+  }).then(() => {});
+}
+
+function addDeskGLTF(
+  parent: THREE.Object3D,
+  disposables: Disposable[],
+  x: number,
+  z: number,
+): Promise<number> {
+  // targetSize 按桌子宽度（~1.2m）缩放；返回桌面 surfaceY
+  return loadGLTF('/media/desk.glb', parent, disposables, {
+    x, yBottom: 0, z,
+    targetSize: 1.2,
+    rotationY: Math.PI / 2,
+  }).then(({ surfaceY }) => surfaceY);
+}
+
+function addChairGLTF(
+  parent: THREE.Object3D,
+  disposables: Disposable[],
+  x: number,
+  z: number,
+): Promise<void> {
+  return loadGLTF('/media/chair.glb', parent, disposables, {
+    x, yBottom: 0, z,
+    targetSize: 0.85,
+    rotationY: Math.PI / 2,  // 椅面朝向桌子
+  }).then(({ model }) => {
+    model.position.x = 1.32;
+    model.position.z = 0.6;
   });
 }
 
@@ -372,21 +420,14 @@ function buildRoom(scene: THREE.Scene, disposables: Disposable[]) {
 
   const deskX = hw - 0.38;
   const deskZ = 0.55;
-  addBox(room, mats.woodLight, 0.7, 0.05, 1.36, deskX, 0.72, deskZ);
-  addBox(room, mats.wood, 0.06, 0.72, 0.06, deskX - 0.3, 0, deskZ - 0.6);
-  addBox(room, mats.wood, 0.06, 0.72, 0.06, deskX + 0.3, 0, deskZ - 0.6);
-  addBox(room, mats.wood, 0.06, 0.72, 0.06, deskX - 0.3, 0, deskZ + 0.6);
-  addBox(room, mats.wood, 0.06, 0.72, 0.06, deskX + 0.3, 0, deskZ + 0.6);
+  // 桌子加载后，用桌面高度 surfaceY 精确放置笔记本
+  addDeskGLTF(room, disposables, deskX, deskZ).then((surfaceY) => {
+    addLaptopGLTF(room, disposables, deskX - 0.02, surfaceY, deskZ);
+    addBox(room, mats.fabric, 0.07, 0.09, 0.07, deskX + 0.22, surfaceY, deskZ + 0.38);
+  });
 
-  addLaptopGLTF(room, disposables, deskX - 0.02, 0.77, deskZ);
-  addBox(room, mats.fabric, 0.07, 0.09, 0.07, deskX + 0.22, 0.77, deskZ + 0.38);
-
-  addBox(room, mats.wood, 0.4, 0.06, 0.4, deskX - 0.72, 0.42, deskZ);
-  addBox(room, mats.wood, 0.05, 0.42, 0.05, deskX - 0.88, 0, deskZ - 0.16);
-  addBox(room, mats.wood, 0.05, 0.42, 0.05, deskX - 0.56, 0, deskZ - 0.16);
-  addBox(room, mats.wood, 0.05, 0.42, 0.05, deskX - 0.88, 0, deskZ + 0.16);
-  addBox(room, mats.wood, 0.05, 0.42, 0.05, deskX - 0.56, 0, deskZ + 0.16);
-  addBox(room, mats.wood, 0.4, 0.42, 0.05, deskX - 0.72, 0.48, deskZ - 0.18);
+  // 椅子放在桌子前方，面朝桌子
+  addChairGLTF(room, disposables, deskX, deskZ + 0.75);
 
   const plant = new THREE.Group();
   plant.position.set(-hw + 0.38, 0, 1.52);

@@ -247,8 +247,7 @@ function addBedGLTF(
     model.position.y = -0.005202873560493086;
     model.position.x = -1.5185358051199018;
     model.position.z = -0.05542627426303387;
-    // 床长方向（旋转后对应本地 X 轴）拉长 1.5 倍
-    model.scale.x *= 1.5;
+    model.scale.set(0.8517072832304077, 0.7097560693586731, 1.0646341040380096);
   });
 }
 

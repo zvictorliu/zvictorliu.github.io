@@ -183,6 +183,20 @@ function addDeskGLTF(
   }).then(({ surfaceY }) => surfaceY);
 }
 
+function addMouseGLTF(
+  parent: THREE.Object3D,
+  disposables: Disposable[],
+  x: number,
+  yBottom: number,
+  z: number,
+): Promise<void> {
+  return loadGLTF('/media/mouse.glb', parent, disposables, {
+    x, yBottom, z,
+    targetSize: 0.12,  // 鼠标约 12cm 长
+    rotationY: Math.PI / 2,
+  }).then(() => {});
+}
+
 function addChairGLTF(
   parent: THREE.Object3D,
   disposables: Disposable[],
@@ -423,7 +437,7 @@ function buildRoom(scene: THREE.Scene, disposables: Disposable[]) {
   // 桌子加载后，用桌面高度 surfaceY 精确放置笔记本
   addDeskGLTF(room, disposables, deskX, deskZ).then((surfaceY) => {
     addLaptopGLTF(room, disposables, deskX - 0.02, surfaceY, deskZ);
-    addBox(room, mats.fabric, 0.07, 0.09, 0.07, deskX + 0.22, surfaceY, deskZ + 0.38);
+    addMouseGLTF(room, disposables, deskX + 0.22, surfaceY, deskZ + 0.38);
   });
 
   // 椅子放在桌子前方，面朝桌子

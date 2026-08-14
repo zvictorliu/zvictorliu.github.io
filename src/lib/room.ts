@@ -251,6 +251,23 @@ function addBedGLTF(
   });
 }
 
+function addFridgeGLTF(
+  parent: THREE.Object3D,
+  disposables: Disposable[],
+  x: number,
+  z: number,
+): Promise<void> {
+  return loadGLTF('/media/fridge.glb', parent, disposables, {
+    x, yBottom: 0, z,
+    targetSize: 0.65,
+  }).then(({ model }) => {
+    model.position.x = 2.4026155772429525;
+    model.position.z = 1.3;
+    model.rotation.y = -Math.PI;
+    model.scale.set(0.3581706416452102, 0.4498047699742522, 0.6172559624678153);
+  });
+}
+
 function addThreshold(scene: THREE.Scene, disposables: Disposable[]) {
   const group = new THREE.Group();
   scene.add(group);
@@ -449,6 +466,9 @@ function buildRoom(scene: THREE.Scene, disposables: Disposable[]) {
   // 椅子放在桌子前方，面朝桌子
   addChairGLTF(room, disposables, deskX, deskZ);
 
+
+  // 冰箱：右墙（x≈hw）靠门侧（z≈hd）
+  addFridgeGLTF(room, disposables, hw - 0.38, hd - 0.5);
 
   // 装饰画挂左墙（床上方）
   addBox(room, mats.frame, 0.5, 0.72, 0.04, -hw + 0.03, 1.35, bedZ, { cast: false, ry: Math.PI / 2 });

@@ -245,9 +245,10 @@ function addBedGLTF(
   }).then(({ model }) => {
     model.rotation.y = -Math.PI / 2;
     model.position.y = -0.005202873560493086;
-    // 横向（床长方向）拉长 1.5 倍
-    model.scale.z *= 1.5;
-    (window as Record<string, unknown>).__bed = model;
+    model.position.x = -1.5185358051199018;
+    model.position.z = -0.05542627426303387;
+    // 床长方向（旋转后对应本地 X 轴）拉长 1.5 倍
+    model.scale.x *= 1.5;
   });
 }
 

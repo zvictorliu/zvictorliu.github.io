@@ -357,66 +357,75 @@ function buildRoom(scene: THREE.Scene, disposables: Disposable[]) {
     cast: false,
   });
 
-  addBox(room, mats.wall, ROOM_W + WALL_T * 2, ROOM_H, WALL_T, 0, 0, -hd - WALL_T / 2, { cast: false });
-  addBox(room, mats.wall, WALL_T, ROOM_H, ROOM_D, hw + WALL_T / 2, 0, 0, { cast: false });
-
-  const winZ0 = -0.5;
-  const winZ1 = 0.95;
+  // 后墙（-Z）实墙 —— 窗户在后墙，左侧留实墙给床头板
+  const winX0 = -0.2;   // 窗户沿 X 轴范围
+  const winX1 = 1.6;
   const winY0 = 1.02;
   const winY1 = 2.18;
-  const leftX = -hw - WALL_T / 2;
-
-  addBox(room, mats.wall, WALL_T, winY0, ROOM_D, leftX, 0, 0, { cast: false });
-  addBox(room, mats.wall, WALL_T, ROOM_H - winY1, ROOM_D, leftX, winY1, 0, { cast: false });
-  addBox(room, mats.wall, WALL_T, winY1 - winY0, winZ0 - -hd, leftX, winY0, (-hd + winZ0) / 2, {
-    cast: false,
-  });
-  addBox(room, mats.wall, WALL_T, winY1 - winY0, hd - winZ1, leftX, winY0, (hd + winZ1) / 2, {
-    cast: false,
-  });
-
-  const winW = winZ1 - winZ0;
+  const winW = winX1 - winX0;
   const winH = winY1 - winY0;
-  const winZ = (winZ0 + winZ1) / 2;
-  addBox(room, mats.woodLight, 0.06, winH + 0.1, 0.06, -hw + 0.02, winY0 - 0.05, winZ0, { cast: false });
-  addBox(room, mats.woodLight, 0.06, winH + 0.1, 0.06, -hw + 0.02, winY0 - 0.05, winZ1, { cast: false });
-  addBox(room, mats.woodLight, 0.06, 0.06, winW + 0.12, -hw + 0.02, winY0 - 0.05, winZ, { cast: false });
-  addBox(room, mats.woodLight, 0.06, 0.06, winW + 0.12, -hw + 0.02, winY1, winZ, { cast: false });
-  addBox(room, mats.woodLight, 0.04, winH, 0.04, -hw + 0.02, winY0, winZ, { cast: false });
-  addBox(room, mats.glass, 0.02, winH - 0.04, winW - 0.04, -hw + 0.01, winY0 + 0.02, winZ, {
+  const winX = (winX0 + winX1) / 2;
+  const backZ = -hd - WALL_T / 2;
+
+  // 后墙分四块（窗洞两侧 + 上下）
+  addBox(room, mats.wall, ROOM_W + WALL_T * 2, winY0, WALL_T, 0, 0, backZ, { cast: false });
+  addBox(room, mats.wall, ROOM_W + WALL_T * 2, ROOM_H - winY1, WALL_T, 0, winY1, backZ, { cast: false });
+  addBox(room, mats.wall, WALL_T + (winX0 + hw), ROOM_H, WALL_T, (-hw + winX0 - WALL_T) / 2, 0, backZ, { cast: false });
+  addBox(room, mats.wall, WALL_T + (hw - winX1), ROOM_H, WALL_T, (winX1 + hw + WALL_T) / 2, 0, backZ, { cast: false });
+
+  // 右墙实墙
+  addBox(room, mats.wall, WALL_T, ROOM_H, ROOM_D, hw + WALL_T / 2, 0, 0, { cast: false });
+
+  // 左墙实墙（床靠左墙，无窗）
+  addBox(room, mats.wall, WALL_T, ROOM_H, ROOM_D, -hw - WALL_T / 2, 0, 0, { cast: false });
+
+  // 后墙窗框
+  addBox(room, mats.woodLight, 0.06, winH + 0.1, 0.06, winX0, winY0 - 0.05, -hd + 0.02, { cast: false });
+  addBox(room, mats.woodLight, 0.06, winH + 0.1, 0.06, winX1, winY0 - 0.05, -hd + 0.02, { cast: false });
+  addBox(room, mats.woodLight, winW + 0.12, 0.06, 0.06, winX, winY0 - 0.05, -hd + 0.02, { cast: false });
+  addBox(room, mats.woodLight, winW + 0.12, 0.06, 0.06, winX, winY1, -hd + 0.02, { cast: false });
+  addBox(room, mats.woodLight, winW, 0.04, 0.04, winX, (winY0 + winY1) / 2, -hd + 0.02, { cast: false });
+  addBox(room, mats.glass, winW - 0.04, winH - 0.04, 0.02, winX, winY0 + 0.02, -hd + 0.01, {
     cast: false,
     receive: false,
   });
 
-  addBox(room, mats.linen, 0.04, winH + 0.12, 0.22, -hw + 0.08, winY0 - 0.04, winZ0 - 0.08);
-  addBox(room, mats.linen, 0.04, winH + 0.12, 0.22, -hw + 0.08, winY0 - 0.04, winZ1 + 0.08);
+  // 后墙窗帘（窗户两侧）
+  addBox(room, mats.linen, 0.22, winH + 0.12, 0.04, winX0 - 0.08, winY0 - 0.04, -hd + 0.08);
+  addBox(room, mats.linen, 0.22, winH + 0.12, 0.04, winX1 + 0.08, winY0 - 0.04, -hd + 0.08);
 
-  addBox(room, mats.fabric, 1.9, 0.02, 1.5, -0.25, 0.001, 0.35, { cast: false });
+  // ── 床移到左墙 ──────────────────────────────────────────
+  // 床头板靠 -X 左墙，床沿 Z 轴展开（床宽=1.95 沿 Z，床深=1.28 沿 X）
+  const bedX = -hw + 0.98;   // 床中心 X（距左墙约半张床深）
+  const bedZ = 0.1;           // 床中心 Z（房间中部偏前）
+  addBox(room, mats.wood, 1.28, 0.26, 1.95, bedX, 0, bedZ);                       // 床板
+  addBox(room, mats.wood, 0.07, 0.72, 1.95, bedX - 0.6, 0.26, bedZ);             // 床头板（靠左墙）
+  addBox(room, mats.linen, 1.2, 0.14, 1.86, bedX + 0.02, 0.26, bedZ);            // 床垫
+  addBox(room, mats.white, 0.36, 0.11, 0.52, bedX - 0.32, 0.4, bedZ - 0.5);     // 枕头
+  addBox(room, mats.sage, 0.82, 0.05, 1.86, bedX + 0.16, 0.4, bedZ);             // 毯子
 
-  const bedX = -1.15;
-  const bedZ = -1.22;
-  addBox(room, mats.wood, 1.95, 0.26, 1.28, bedX, 0, bedZ);
-  addBox(room, mats.wood, 1.95, 0.72, 0.07, bedX, 0.26, bedZ - 0.6);
-  addBox(room, mats.linen, 1.86, 0.14, 1.2, bedX, 0.26, bedZ + 0.02);
-  addBox(room, mats.white, 0.52, 0.11, 0.36, bedX - 0.5, 0.4, bedZ - 0.32);
-  addBox(room, mats.sage, 1.86, 0.05, 0.82, bedX, 0.4, bedZ + 0.16);
-
-  addBox(room, mats.wood, 0.42, 0.4, 0.4, -0.02, 0, -1.72);
-  addBox(room, mats.white, 0.18, 0.22, 0.18, -0.02, 0.4, -1.72);
+  // 床头柜（床头板右侧，靠左墙）
+  addBox(room, mats.wood, 0.42, 0.4, 0.4, bedX + 0.84, 0, bedZ - 0.72);
+  addBox(room, mats.white, 0.18, 0.22, 0.18, bedX + 0.84, 0.4, bedZ - 0.72);
   const nightShade = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.14, 16, 1, true), mats.shade);
-  nightShade.position.set(-0.02, 0.7, -1.72);
+  nightShade.position.set(bedX + 0.84, 0.7, bedZ - 0.72);
   nightShade.castShadow = true;
   room.add(nightShade);
 
-  const shelfX = 1.52;
-  const shelfZ = -hd + 0.18;
-  addBox(room, mats.wood, 1.18, 2.02, 0.04, shelfX, 0, shelfZ - 0.15);
+  // 地毯（床前）
+  addBox(room, mats.fabric, 1.5, 0.02, 1.9, bedX + 0.35, 0.001, bedZ + 0.85, { cast: false });
+
+  // ── 书柜移到门墙（+Z 方向）─────────────────────────────
+  // 门在 Z=+hd 中央，书柜放在门右侧（+X 方向）
+  const shelfX = 0.8;
+  const shelfZ = hd - 0.18;
+  addBox(room, mats.wood, 1.18, 2.02, 0.04, shelfX, 0, shelfZ + 0.15);
   addBox(room, mats.wood, 0.04, 2.02, 0.34, shelfX - 0.57, 0, shelfZ);
   addBox(room, mats.wood, 0.04, 2.02, 0.34, shelfX + 0.57, 0, shelfZ);
   addBox(room, mats.wood, 1.18, 0.04, 0.34, shelfX, 0, shelfZ);
   addBox(room, mats.wood, 1.18, 0.04, 0.34, shelfX, 1.98, shelfZ);
   for (let i = 0; i < 4; i += 1) {
-    addBox(room, mats.wood, 1.1, 0.03, 0.3, shelfX, 0.42 + i * 0.42, shelfZ + 0.02, { cast: false });
+    addBox(room, mats.wood, 1.1, 0.03, 0.3, shelfX, 0.42 + i * 0.42, shelfZ - 0.02, { cast: false });
   }
 
   const rand = mulberry32(42);
@@ -431,7 +440,7 @@ function buildRoom(scene: THREE.Scene, disposables: Disposable[]) {
       const color = bookColors[Math.floor(rand() * bookColors.length)];
       const bookMat = new THREE.MeshStandardMaterial({ color, roughness: 0.7 });
       disposables.push(bookMat);
-      addBox(room, bookMat, bw, bh, 0.2, xCursor + bw / 2, y, shelfZ + 0.04);
+      addBox(room, bookMat, bw, bh, 0.2, xCursor + bw / 2, y, shelfZ - 0.04);
       xCursor += bw + 0.012;
     }
   }
@@ -447,8 +456,9 @@ function buildRoom(scene: THREE.Scene, disposables: Disposable[]) {
   // 椅子放在桌子前方，面朝桌子
   addChairGLTF(room, disposables, deskX, deskZ + 0.75);
 
+  // 植物移到床脚角落（左墙前角）
   const plant = new THREE.Group();
-  plant.position.set(-hw + 0.38, 0, 1.52);
+  plant.position.set(-hw + 0.38, 0, bedZ + 1.2);
   const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.1, 0.18, 16), mats.pot);
   pot.position.y = 0.09;
   pot.castShadow = true;
@@ -468,8 +478,9 @@ function buildRoom(scene: THREE.Scene, disposables: Disposable[]) {
   plant.add(foliage2);
   room.add(plant);
 
+  // 台灯放在床头柜上方区域（左墙旁，床附近）
   const lamp = new THREE.Group();
-  lamp.position.set(-hw + 0.32, 0, 0.18);
+  lamp.position.set(-hw + 0.32, 0, bedZ - 0.72);
   addBox(lamp, mats.metal, 0.16, 0.03, 0.16, 0, 0, 0);
   addBox(lamp, mats.metal, 0.03, 1.35, 0.03, 0, 0.03, 0, { cast: false });
   const lampShade = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.22, 0.22, 20, 1, true), mats.shade);
@@ -477,8 +488,9 @@ function buildRoom(scene: THREE.Scene, disposables: Disposable[]) {
   lamp.add(lampShade);
   room.add(lamp);
 
-  addBox(room, mats.frame, 0.72, 0.5, 0.04, 0.22, 1.35, -hd + 0.03, { cast: false });
-  addBox(room, mats.art, 0.62, 0.4, 0.02, 0.22, 1.4, -hd + 0.05, { cast: false });
+  // 装饰画挂左墙（床上方）
+  addBox(room, mats.frame, 0.5, 0.72, 0.04, -hw + 0.03, 1.35, bedZ, { cast: false, ry: Math.PI / 2 });
+  addBox(room, mats.art, 0.4, 0.62, 0.02, -hw + 0.05, 1.4, bedZ, { cast: false, ry: Math.PI / 2 });
 
   const pendant = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.22, 0.12, 20), mats.shade);
   pendant.position.set(0.1, ROOM_H - 0.18, 0.15);
@@ -530,7 +542,8 @@ function addLights(scene: THREE.Scene) {
   scene.add(hemi);
 
   const sun = new THREE.DirectionalLight(0xffe0b8, 2.1);
-  sun.position.set(-6.5, 4.2, 0.8);
+  // 阳光从后方（-Z）窗户射入
+  sun.position.set(0.8, 4.2, -6.5);
   sun.target.position.set(0, 1, 0);
   sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048);
@@ -549,13 +562,15 @@ function addLights(scene: THREE.Scene) {
   ceiling.position.set(0.1, 2.45, 0.15);
   scene.add(ceiling);
 
+  // 台灯光源跟随床头柜位置（左墙旁， bedZ - 0.72）
   const lampLight = new THREE.PointLight(0xffcc88, 8, 4.5, 2);
-  lampLight.position.set(-ROOM_W / 2 + 0.32, 1.42, 0.18);
+  lampLight.position.set(-ROOM_W / 2 + 0.32, 1.42, 0.1 - 0.72);
   scene.add(lampLight);
 
-  const windowFill = new THREE.RectAreaLight(0xcfe6f5, 6, 1.35, 1.1);
-  windowFill.position.set(-ROOM_W / 2 + 0.04, 1.6, 0.22);
-  windowFill.lookAt(0, 1.4, 0.22);
+  // 窗光从后墙窗户射入（朝 +Z 方向）
+  const windowFill = new THREE.RectAreaLight(0xcfe6f5, 6, 1.8, 1.1);
+  windowFill.position.set(0.7, 1.6, -ROOM_D / 2 + 0.04);
+  windowFill.lookAt(0.7, 1.4, 0);
   scene.add(windowFill);
 
   return { hemi, sun, ceiling, lampLight, windowFill };

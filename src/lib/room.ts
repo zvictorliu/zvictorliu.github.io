@@ -165,7 +165,7 @@ function addLaptopGLTF(
   return loadGLTF('/media/laptop.glb', parent, disposables, {
     x, yBottom, z,
     targetSize: 0.48,
-    rotationY: Math.PI / 2,  // 屏幕朝向相机，背靠墙面正放
+    rotationY: Math.PI / 2,
   }).then(() => {});
 }
 
@@ -197,7 +197,7 @@ function addMouseGLTF(
   }).then(({ model }) => {
     model.rotation.y = -1.1707963267948962;
     model.position.x = 2.2634963568464728;
-    model.position.z = 0.9;
+    model.position.z = -1.1;
   });
 }
 
@@ -212,8 +212,8 @@ function addChairGLTF(
     targetSize: 0.85,
     rotationY: Math.PI / 2,  // 椅面朝向桌子
   }).then(({ model }) => {
-    model.position.x = 1.32;
-    model.position.z = 0.6;
+    model.position.x = 1.52;
+    model.position.z = -1.4;
   });
 }
 
@@ -445,16 +445,16 @@ function buildRoom(scene: THREE.Scene, disposables: Disposable[]) {
     }
   }
 
-  const deskX = hw - 0.38;
-  const deskZ = 0.55;
+  const deskX = 2.30;
+  const deskZ = -1.45;
   // 桌子加载后，用桌面高度 surfaceY 精确放置笔记本
   addDeskGLTF(room, disposables, deskX, deskZ).then((surfaceY) => {
-    addLaptopGLTF(room, disposables, deskX - 0.02, surfaceY, deskZ);
-    addMouseGLTF(room, disposables, deskX + 0.22, surfaceY, deskZ + 0.38);
+    addLaptopGLTF(room, disposables, 2.3215149321547273, surfaceY, -1.5358443826578598);
+    addMouseGLTF(room, disposables, deskX, surfaceY, deskZ);
   });
 
   // 椅子放在桌子前方，面朝桌子
-  addChairGLTF(room, disposables, deskX, deskZ + 0.75);
+  addChairGLTF(room, disposables, deskX, deskZ);
 
   // 植物移到床脚角落（左墙前角）
   const plant = new THREE.Group();

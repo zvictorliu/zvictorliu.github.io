@@ -225,9 +225,11 @@ function addWardrobeGLTF(
 ): Promise<void> {
   return loadGLTF('/media/wardrobe.glb', parent, disposables, {
     x, yBottom: 0, z,
-    targetSize: 1.2,  // 衣柜宽约 120cm
+    targetSize: 1.8,  // 衣柜宽约 120cm × 1.5
   }).then(({ model }) => {
-    (window as Record<string, unknown>).__wardrobe = model;
+    model.rotation.y = -Math.PI;
+    model.position.x = -1.5;
+    model.position.z = 1.8;
   });
 }
 
@@ -239,8 +241,12 @@ function addBedGLTF(
 ): Promise<void> {
   return loadGLTF('/media/bed.glb', parent, disposables, {
     x, yBottom: 0, z,
-    targetSize: 1.95,  // 双人床宽约 195cm
+    targetSize: 1.95,
   }).then(({ model }) => {
+    model.rotation.y = -Math.PI / 2;
+    model.position.y = -0.005202873560493086;
+    // 横向（床长方向）拉长 1.5 倍
+    model.scale.z *= 1.5;
     (window as Record<string, unknown>).__bed = model;
   });
 }
@@ -427,8 +433,6 @@ function buildRoom(scene: THREE.Scene, disposables: Disposable[]) {
   const bedZ = 0.1;           // 床中心 Z（房间中部偏前）
   addBedGLTF(room, disposables, bedX, bedZ);
 
-  // 地毯（床前）
-  addBox(room, mats.fabric, 1.5, 0.02, 1.9, bedX + 0.35, 0.001, bedZ + 0.85, { cast: false });
 
   // ── 衣柜（GLB 模型，门墙右侧）─────────────────────────────
   // 门在 Z=+hd 中央，衣柜放在门右侧（+X 方向）
@@ -445,37 +449,6 @@ function buildRoom(scene: THREE.Scene, disposables: Disposable[]) {
   // 椅子放在桌子前方，面朝桌子
   addChairGLTF(room, disposables, deskX, deskZ);
 
-  // 植物移到床脚角落（左墙前角）
-  const plant = new THREE.Group();
-  plant.position.set(-hw + 0.38, 0, bedZ + 1.2);
-  const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.1, 0.18, 16), mats.pot);
-  pot.position.y = 0.09;
-  pot.castShadow = true;
-  pot.receiveShadow = true;
-  plant.add(pot);
-  const soil = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.02, 16), mats.soil);
-  soil.position.y = 0.18;
-  plant.add(soil);
-  const foliage = new THREE.Mesh(new THREE.IcosahedronGeometry(0.22, 1), mats.leaf);
-  foliage.position.y = 0.42;
-  foliage.scale.set(1, 1.15, 1);
-  foliage.castShadow = true;
-  plant.add(foliage);
-  const foliage2 = new THREE.Mesh(new THREE.IcosahedronGeometry(0.14, 1), mats.leaf);
-  foliage2.position.set(0.1, 0.5, 0.04);
-  foliage2.castShadow = true;
-  plant.add(foliage2);
-  room.add(plant);
-
-  // 台灯放在床头柜上方区域（左墙旁，床附近）
-  const lamp = new THREE.Group();
-  lamp.position.set(-hw + 0.32, 0, bedZ - 0.72);
-  addBox(lamp, mats.metal, 0.16, 0.03, 0.16, 0, 0, 0);
-  addBox(lamp, mats.metal, 0.03, 1.35, 0.03, 0, 0.03, 0, { cast: false });
-  const lampShade = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.22, 0.22, 20, 1, true), mats.shade);
-  lampShade.position.y = 1.48;
-  lamp.add(lampShade);
-  room.add(lamp);
 
   // 装饰画挂左墙（床上方）
   addBox(room, mats.frame, 0.5, 0.72, 0.04, -hw + 0.03, 1.35, bedZ, { cast: false, ry: Math.PI / 2 });
@@ -486,34 +459,6 @@ function buildRoom(scene: THREE.Scene, disposables: Disposable[]) {
   room.add(pendant);
   addBox(room, mats.metal, 0.015, 0.16, 0.015, 0.1, ROOM_H - 0.16, 0.15, { cast: false });
 
-  const cat = new THREE.Group();
-  cat.position.set(bedX + 0.35, 0.52, bedZ + 0.12);
-  cat.rotation.y = -0.6;
-  const body = new THREE.Mesh(new THREE.SphereGeometry(0.12, 16, 12), mats.cat);
-  body.scale.set(1.45, 0.85, 1);
-  body.position.set(0, 0.08, 0);
-  body.castShadow = true;
-  cat.add(body);
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.085, 16, 12), mats.cat);
-  head.position.set(0.14, 0.13, 0.02);
-  head.castShadow = true;
-  cat.add(head);
-  const earGeo = new THREE.ConeGeometry(0.035, 0.07, 8);
-  disposables.push(earGeo);
-  const earL = new THREE.Mesh(earGeo, mats.catEar);
-  earL.position.set(0.12, 0.21, -0.04);
-  earL.rotation.z = -0.25;
-  cat.add(earL);
-  const earR = new THREE.Mesh(earGeo, mats.catEar);
-  earR.position.set(0.17, 0.21, 0.05);
-  earR.rotation.z = 0.2;
-  cat.add(earR);
-  const tail = new THREE.Mesh(new THREE.CapsuleGeometry(0.022, 0.2, 4, 8), mats.cat);
-  tail.position.set(-0.18, 0.12, 0.02);
-  tail.rotation.z = 0.95;
-  tail.castShadow = true;
-  cat.add(tail);
-  room.add(cat);
 
   room.traverse((child: THREE.Object3D) => {
     if (child instanceof THREE.Mesh) {
@@ -551,18 +496,13 @@ function addLights(scene: THREE.Scene) {
   ceiling.position.set(0.1, 2.45, 0.15);
   scene.add(ceiling);
 
-  // 台灯光源跟随床头柜位置（左墙旁， bedZ - 0.72）
-  const lampLight = new THREE.PointLight(0xffcc88, 8, 4.5, 2);
-  lampLight.position.set(-ROOM_W / 2 + 0.32, 1.42, 0.1 - 0.72);
-  scene.add(lampLight);
-
   // 窗光从后墙窗户射入（朝 +Z 方向）
   const windowFill = new THREE.RectAreaLight(0xcfe6f5, 6, 1.8, 1.1);
   windowFill.position.set(0.7, 1.6, -ROOM_D / 2 + 0.04);
   windowFill.lookAt(0.7, 1.4, 0);
   scene.add(windowFill);
 
-  return { hemi, sun, ceiling, lampLight, windowFill };
+  return { hemi, sun, ceiling, windowFill };
 }
 
 export function initRoom(
@@ -613,7 +553,6 @@ export function initRoom(
     lights.hemi.intensity = 0.45 * k;
     lights.sun.intensity = 2.1 * k;
     lights.ceiling.intensity = 18 * k;
-    lights.lampLight.intensity = 8 * k;
     lights.windowFill.intensity = 6 * k;
     glass.emissiveIntensity = 0.35 * k;
     shade.emissiveIntensity = 0.28 * k;

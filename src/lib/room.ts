@@ -194,7 +194,11 @@ function addMouseGLTF(
     x, yBottom, z,
     targetSize: 0.12,  // 鼠标约 12cm 长
     rotationY: Math.PI / 2,
-  }).then(() => {});
+  }).then(({ model }) => {
+    model.rotation.y = -1.1707963267948962;
+    model.position.x = 2.2634963568464728;
+    model.position.z = 0.9;
+  });
 }
 
 function addChairGLTF(
